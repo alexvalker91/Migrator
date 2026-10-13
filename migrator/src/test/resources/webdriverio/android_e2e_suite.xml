@@ -1,0 +1,19 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="My Android E2E Suite" parallel="tests">
+    <parameter name="platform" value="Android"/>
+
+    <test name="Android Tests">
+        <!-- ФИЛЬТР ГРУПП -->
+        <groups>
+            <run>
+                <!-- Запускаем всё, КРОМЕ ios-only -->
+                <exclude name="ios-only"/>
+            </run>
+        </groups>
+
+        <!-- СПИСОК КЛАССОВ -->
+        <classes>
+            <class name="webdriverio.LoginTest"/>
+        </classes>
+    </test>
+</suite>
