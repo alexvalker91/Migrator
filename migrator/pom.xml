@@ -86,5 +86,11 @@
             <artifactId>langchain4j-open-ai</artifactId>
             <version>1.21.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.modelcontextprotocol.sdk</groupId>
+            <artifactId>mcp</artifactId>
+            <version>2.0.1</version>
+        </dependency>
     </dependencies>
 </project>
