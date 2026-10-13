@@ -124,29 +124,56 @@ public class MigrationRunnerDryRun {
         System.out.println("==================================================");
 
         try {
-            // 1. Находим и считываем исходный код тестового класса
+            // [1/4] Читаем тест и вызываем Planner LLM для построения списка шагов (steps)
+            System.out.println("\n[1/4] Чтение файла теста и анализ логики через Planner LLM...");
             String testClassSource = findAndReadJavaFile(TESTS_DIR, testClassName + ".java");
             if (testClassSource == null) {
-                throw new RuntimeException("Не найден файл теста: " + testClassName + ".java");
+                throw new RuntimeException("Не найден файл теста: " + testClassName + ".java в директории " + TESTS_DIR);
             }
 
-            // 2. Planner LLM разбирает тест на список шагов (Actions)
-            System.out.println("\n[1/4] Анализ логики теста через Planner LLM...");
+            // ВОТ ЗДЕСЬ ОБЪЯВЛЯЮТСЯ И СОЗДАЮТСЯ STEPS:
             List<TestStep> steps = planTestSteps(testClassSource, testMethodName);
             System.out.println("Построен план из " + steps.size() + " шагов:");
             for (int i = 0; i < steps.size(); i++) {
                 System.out.println("  " + (i + 1) + ". " + steps.get(i));
             }
 
-            // 3. Запуск двух параллельных MCP-сессий
+            // [2/4] Запуск клиентов MCP
             System.out.println("\n[2/4] Подключение к Android и iOS через MCP...");
             try (McpSyncClient androidClient = createAndroidClient();
                  McpSyncClient iosClient = createIosClient()) {
 
-                initSession(androidClient, "android", ANDROID_CAPS_PATH);
-                initSession(iosClient, "ios", IOS_CAPS_PATH);
+                System.out.println("Запускаем приложения на Android и iOS одновременно...");
 
-                // 4. Пошаговое выполнение с получением PageSource и обновлением локаторов
+                // Запускаем Android в фоновом потоке
+                CompletableFuture<Void> androidStart = CompletableFuture.runAsync(() -> {
+                    try {
+                        System.out.println("-> [Android] Старт сессии...");
+                        initSession(androidClient, "android", ANDROID_CAPS_PATH);
+                        System.out.println("-> [Android] Сессия запущена!");
+                    } catch (Exception e) {
+                        System.err.println("Ошибка старта Android: " + e.getMessage());
+                        throw new RuntimeException(e);
+                    }
+                });
+
+                // Запускаем iOS в параллельном потоке
+                CompletableFuture<Void> iosStart = CompletableFuture.runAsync(() -> {
+                    try {
+                        System.out.println("-> [iOS] Старт сессии...");
+                        initSession(iosClient, "ios", IOS_CAPS_PATH);
+                        System.out.println("-> [iOS] Сессия запущена!");
+                    } catch (Exception e) {
+                        System.err.println("Ошибка старта iOS: " + e.getMessage());
+                        throw new RuntimeException(e);
+                    }
+                });
+
+                // Ждем, пока ОБА приложения откроются на экранах
+                CompletableFuture.allOf(androidStart, iosStart).join();
+                System.out.println("\n Приложения успешно запущены на обоих устройствах!\n");
+
+                // [3/4] Пошаговое выполнение с получением PageSource и обновлением локаторов
                 System.out.println("\n[3/4] Пошаговая синхронная миграция локаторов...");
                 for (TestStep step : steps) {
                     processStep(step, androidClient, iosClient);
@@ -352,30 +379,30 @@ public class MigrationRunnerDryRun {
         return result.content().toString();
     }
 
-    private McpSyncClient createAndroidClient() {
-        return buildClient(ANDROID_CAPS_PATH);
-    }
-
-    private McpSyncClient createIosClient() {
-        return buildClient(IOS_CAPS_PATH);
-    }
-
-    private McpSyncClient buildClient(String capsPath) {
-        ServerParameters params = ServerParameters.builder("npx")
-                .args("-y", "appium-mcp@latest")
-                .env(Map.of("CAPABILITIES_CONFIG", capsPath))
-                .build();
-
-        McpJsonMapper jsonMapper = new JacksonMcpJsonMapper(new JsonMapper());
-        StdioClientTransport transport = new StdioClientTransport(params, jsonMapper, 10 * 1024 * 1024);
-
-        McpSyncClient client = McpClient.sync(transport)
-                .requestTimeout(Duration.ofSeconds(120))
-                .build();
-
-        client.initialize();
-        return client;
-    }
+//    private McpSyncClient createAndroidClient() {
+//        return buildClient(ANDROID_CAPS_PATH);
+//    }
+//
+//    private McpSyncClient createIosClient() {
+//        return buildClient(IOS_CAPS_PATH);
+//    }
+//
+//    private McpSyncClient buildClient(String capsPath) {
+//        ServerParameters params = ServerParameters.builder("npx")
+//                .args("-y", "appium-mcp@latest")
+//                .env(Map.of("CAPABILITIES_CONFIG", capsPath))
+//                .build();
+//
+//        McpJsonMapper jsonMapper = new JacksonMcpJsonMapper(new JsonMapper());
+//        StdioClientTransport transport = new StdioClientTransport(params, jsonMapper, 10 * 1024 * 1024);
+//
+//        McpSyncClient client = McpClient.sync(transport)
+//                .requestTimeout(Duration.ofSeconds(120))
+//                .build();
+//
+//        client.initialize();
+//        return client;
+//    }
 
     // =========================================================================
     // Утилиты
@@ -437,4 +464,33 @@ public class MigrationRunnerDryRun {
             this.value = value;
         }
     }
+
+
+
+    private McpSyncClient createAndroidClient() {
+        return buildClient(ANDROID_CAPS_PATH);
+    }
+
+    private McpSyncClient createIosClient() {
+        return buildClient(IOS_CAPS_PATH);
+    }
+
+    private McpSyncClient buildClient(String capsPath) {
+        ServerParameters params = ServerParameters.builder("npx")
+                .args("-y", "appium-mcp@latest")
+                .env(Map.of("CAPABILITIES_CONFIG", capsPath))
+                .build();
+
+        // Используем второй конструктор со скриншота: с запасом памяти 10 МБ для XML
+        McpJsonMapper jsonMapper = new JacksonMcpJsonMapper(new JsonMapper());
+        StdioClientTransport transport = new StdioClientTransport(params, jsonMapper, 10 * 1024 * 1024);
+
+        McpSyncClient client = McpClient.sync(transport)
+                .requestTimeout(Duration.ofSeconds(120))
+                .build();
+
+        client.initialize();
+        return client;
+    }
+
 }
