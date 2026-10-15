@@ -26,6 +26,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MigrationRunnerDryRun {
+    private final MetricsTracker metrics = new MetricsTracker();
+
     // Пути к репозиторию
     private static final String PROJECT_ROOT = "/Users/Aliaksandr_Kreyer/projects/repositories/";
     private static final String ANDROID_CAPS_PATH = PROJECT_ROOT + "util/capabilities-android.json";
@@ -75,8 +77,9 @@ public class MigrationRunnerDryRun {
                 .build();
     }
 
-    private String askLlmWithLiveOutput(StreamingChatModel model, String prompt) {
+    private String askLlmWithLiveOutput(StreamingChatModel model, String prompt, String modelName) {
         System.out.println("\n--- [LLM РАССУЖДАЕТ / ГЕНЕРИРУЕТ ОТВЕТ] ---");
+        long startTime = System.currentTimeMillis();
 
         StringBuilder fullResponse = new StringBuilder();
         CompletableFuture<String> future = new CompletableFuture<>();
@@ -92,7 +95,9 @@ public class MigrationRunnerDryRun {
 
             @Override
             public void onCompleteResponse(dev.langchain4j.model.chat.response.ChatResponse completeResponse) {
+                long duration = System.currentTimeMillis() - startTime;
                 System.out.println("\n--- [ГЕНЕРАЦИЯ ЗАВЕРШЕНА] ---\n");
+                metrics.record(modelName, completeResponse.tokenUsage(), duration);
                 future.complete(fullResponse.toString());
             }
 
@@ -180,6 +185,12 @@ public class MigrationRunnerDryRun {
                 }
 
                 System.out.println("\n[4/4] === МИГРАЦИЯ ТЕСТА УСПЕШНО ЗАВЕРШЕНА! ===");
+                closeSession(androidClient, "Android");
+                closeSession(iosClient, "iOS");
+
+
+                // ВЫВОД ИНФОГРАФИКИ:
+                metrics.printDashboard();
             }
 
         } catch (Exception e) {
@@ -188,23 +199,43 @@ public class MigrationRunnerDryRun {
         }
     }
 
+    private void closeSession(McpSyncClient client, String platform) {
+        try {
+            System.out.println("Закрываем сессию Appium для " + platform + "...");
+            client.callTool(new McpSchema.CallToolRequest(
+                    "appium_session_management",
+                    Map.of("action", "delete")
+            ));
+            System.out.println("Сессия " + platform + " успешно закрыта.");
+        } catch (Exception e) {
+            System.err.println("Ошибка при закрытии сессии " + platform + ": " + e.getMessage());
+        }
+    }
+
     private void processStep(TestStep step, McpSyncClient androidClient, McpSyncClient iosClient) {
         System.out.println("\n--- Выполняем шаг: " + step.actionType + " | " + step.targetElementDescription + " ---");
 
-        // 1. Получаем Page Source с обоих устройств
-        String androidXml = getPageSource(androidClient);
-        String iosXml = getPageSource(iosClient);
+        // 1. Получаем сырой Page Source
+        String rawAndroidXml = getPageSource(androidClient);
+        String rawIosXml = getPageSource(iosClient);
 
-        // 2. Worker LLM сопоставляет текущее состояние и находит iOS-локатор
-        IosLocator iosLocator = resolveIosLocator(step, androidXml, iosXml);
+        // 2. Очищаем через XmlSanitizer
+        String cleanAndroidXml = XmlSanitizer.sanitize(rawAndroidXml);
+        String cleanIosXml = XmlSanitizer.sanitize(rawIosXml);
+
+        System.out.println("  [XML Stats] Android: " + rawAndroidXml.length() + "b -> " + cleanAndroidXml.length() + "b"
+                + " | iOS: " + rawIosXml.length() + "b -> " + cleanIosXml.length() + "b");
+
+        // 3. Worker LLM получает чистый, сжатый XML
+        IosLocator iosLocator = resolveIosLocator(step, cleanAndroidXml, cleanIosXml);
         System.out.println("  -> Найден iOS локатор: [" + iosLocator.strategy + "] = \"" + iosLocator.value + "\"");
 
-        // 3. Записываем найденный локатор в Page Object класс на диске
+        // 4. Записываем в Page Object
         if (step.pageClassName != null && !step.pageClassName.isBlank()) {
             injectLocatorIntoPageObject(step.pageClassName, step.elementIdentifier, iosLocator);
         }
 
-        // 4. Синхронно выполняем действие на обеих платформах, чтобы продвинуть UI дальше
+        // 5. Выполняем шаг на обоих симуляторах
         executeStepOnDevice(androidClient, step.actionType, step.androidStrategy, step.androidSelector, step.inputValue);
         executeStepOnDevice(iosClient, step.actionType, iosLocator.strategy, iosLocator.value, step.inputValue);
     }
@@ -221,23 +252,23 @@ public class MigrationRunnerDryRun {
             %s
             
             Сначала кратко распиши свои мысли по шагам, а в конце выдай валидный JSON массив шагов в блоке ```json ... ```:
-            [
-              {
-                "actionType": "tap | type | assert_visible",
-                "targetElementDescription": "Краткое описание элемента (например: кнопка Login в меню)",
-                "pageClassName": "Имя класса страницы (например LoginPage, HomeScreen)",
-                "elementIdentifier": "Имя переменной или метода элемента (например loginBtn, emailInput)",
-                "androidStrategy": "accessibility id | id | xpath",
-                "androidSelector": "предполагаемый или известный селектор android",
-                "inputValue": "значение для ввода, если actionType=type, иначе null"
-              }
-            ]
+                [
+                               {
+                                 "actionType": "tap | type | assert_visible",
+                                 "targetElementDescription": "Краткое описание элемента",
+                                 "pageClassName": "Имя класса страницы (например LoginPage, HomeScreen)",
+                                 "elementIdentifier": "Имя переменной WebElement поля или метода (например emailField, passwordField, loginButton, invalidEmailError)",
+                                 "androidStrategy": "accessibility id | id | xpath",
+                                 "androidSelector": "предполагаемый или известный селектор android",
+                                 "inputValue": "значение для ввода, если actionType=type, иначе null"
+                               }
+                             ]
             """, methodName, testSource);
 
         System.out.println(">> Отправляем промпт в Planner (" + PLANNER_MODEL_ID + ")...");
 
         // Вызываем стриминг: текст и мысли модели будут печататься сразу!
-        String rawResponse = askLlmWithLiveOutput(streamingPlannerModel, prompt);
+        String rawResponse = askLlmWithLiveOutput(streamingPlannerModel, prompt, PLANNER_MODEL_ID);
 
         // Извлекаем только JSON блок из ответа
         String jsonResponse = extractJsonBlock(rawResponse);
@@ -265,35 +296,48 @@ public class MigrationRunnerDryRun {
 
     private IosLocator resolveIosLocator(TestStep step, String androidXml, String iosXml) {
         String prompt = String.format("""
-                Ты Appium эксперт. Найди лучший локатор для iOS, соответствующий действию на Android.
-                
-                Действие: %s
-                Описание: %s
-                Android подсказка: strategy=%s, selector=%s
-                
-                XML Android (текущий экран):
-                %s
-                
-                XML iOS (текущий экран):
-                %s
-                
-                Правила выбора локатора iOS:
-                - Приоритет: accessibility id (name/label) > -ios class chain > -ios predicate string > xpath.
-                - Селектор должен быть надежным и уникальным.
-                
-                Ответь строго в формате JSON:
-                {
-                  "strategy": "accessibility id | -ios class chain | -ios predicate string | xpath",
-                  "value": "сам_селектор"
-                }
-                """, step.actionType, step.targetElementDescription, step.androidStrategy, step.androidSelector,
+            Ты Appium эксперт. Найди лучший локатор для iOS, соответствующий действию на Android.
+            
+            Действие: %s
+            Описание: %s
+            Android подсказка: strategy=%s, selector=%s
+            
+            XML Android (текущий экран):
+            %s
+            
+            XML iOS (текущий экран):
+            %s
+            
+            Правила выбора локатора iOS:
+            - Приоритет: accessibility id (name/label) > -ios class chain > -ios predicate string > xpath.
+            - Селектор должен быть надежным и уникальным.
+            
+            Ответь строго в формате JSON:
+            {
+              "strategy": "accessibility id | -ios class chain | -ios predicate string | xpath",
+              "value": "сам_селектор"
+            }
+            """, step.actionType, step.targetElementDescription, step.androidStrategy, step.androidSelector,
                 truncate(androidXml), truncate(iosXml));
 
-        String json = cleanMarkdown(workerModel.chat(prompt));
+        long startTime = System.currentTimeMillis();
+
+        // Вызываем модель через chat(ChatRequest), чтобы достать ChatResponse с токенами:
+        dev.langchain4j.model.chat.response.ChatResponse response = workerModel.chat(
+                dev.langchain4j.model.chat.request.ChatRequest.builder()
+                        .messages(dev.langchain4j.data.message.UserMessage.from(prompt))
+                        .build()
+        );
+
+        long duration = System.currentTimeMillis() - startTime;
+        // Записываем статистику по Worker-модели:
+        metrics.record(WORKER_MODEL_ID, response.tokenUsage(), duration);
+
+        String json = cleanMarkdown(response.aiMessage().text());
         try {
             return jsonParser.readValue(json, IosLocator.class);
         } catch (Exception e) {
-            return new IosLocator("accessibility id", step.androidSelector); // fallback
+            return new IosLocator("accessibility id", step.androidSelector);
         }
     }
 
@@ -312,20 +356,75 @@ public class MigrationRunnerDryRun {
 
         try {
             String content = Files.readString(path);
-            String annotationOrComment = String.format(
-                    "\n    // [Migrated iOS Locator]\n    // @iOSXCUITFindBy(%s = \"%s\")\n",
-                    convertStrategyToAnnotationParam(locator.strategy), locator.value
-            );
 
-            // Если есть поле или метод с таким идентификатором, добавляем аннотацию/локатор перед ним
-            if (elementIdentifier != null && content.contains(elementIdentifier)) {
-                content = content.replaceFirst("(?m)^(\\s*.*" + Pattern.quote(elementIdentifier) + ")", annotationOrComment + "$1");
-                Files.writeString(path, content);
-                System.out.println("  [Code Updated] Локатор сохранен в: " + path.getFileName());
+            // 1. Проверяем и добавляем импорт iOSXCUITFindBy, если его еще нет
+            if (!content.contains("import io.appium.java_client.pagefactory.iOSXCUITFindBy;")) {
+                content = content.replaceFirst(
+                        "(import io\\.appium\\.java_client\\.pagefactory\\.AndroidFindBy;)",
+                        "$1\nimport io.appium.java_client.pagefactory.iOSXCUITFindBy;"
+                );
             }
+
+            // Формируем чистую боевую аннотацию
+            String annotationParam = convertStrategyToAnnotationParam(locator.strategy);
+            String iosAnnotation = String.format("@iOSXCUITFindBy(%s = \"%s\")\n    ", annotationParam, locator.value);
+
+            // 2. Если такая аннотация для этого элемента уже есть — не дублируем
+            if (content.contains("@iOSXCUITFindBy(" + annotationParam + " = \"" + locator.value + "\")")) {
+                System.out.println("  [Code Skipped] Аннотация уже присутствует в " + fileName);
+                return;
+            }
+
+            // 3. Стратегия поиска: ищем соответствующий @AndroidFindBy
+            // Пытаемся найти поле по названию или по связанному методу
+            boolean inserted = false;
+
+            // Вариант А: Ищем поле, связанное с методом (например, enterEmail -> emailField / email)
+            String fieldRegex = "(?i)private\\s+WebElement\\s+([a-zA-Z0-9_]*" + extractBaseName(elementIdentifier) + "[a-zA-Z0-9_]*);";
+            Matcher fieldMatcher = Pattern.compile(fieldRegex).matcher(content);
+
+            if (fieldMatcher.find()) {
+                String fieldName = fieldMatcher.group(1);
+                // Вставляем @iOSXCUITFindBy прямо перед @AndroidFindBy этого поля
+                String targetRegex = "(@AndroidFindBy\\([^\\)]+\\)\\s+private\\s+WebElement\\s+" + Pattern.quote(fieldName) + ";)";
+                if (content.matches("(?s).*" + targetRegex + ".*")) {
+                    content = content.replaceFirst(targetRegex, iosAnnotation + "$1");
+                    inserted = true;
+                }
+            }
+
+            // Вариант Б: Если точное поле не нашли, вставляем перед строкой с @AndroidFindBy,
+            // где значение селектора совпадает с locator.value (или accessibility id)
+            if (!inserted) {
+                String byValueRegex = "(@AndroidFindBy\\([^\\n]*\"" + Pattern.quote(locator.value) + "\"[^\\n]*\\))";
+                if (Pattern.compile(byValueRegex).matcher(content).find()) {
+                    content = content.replaceFirst(byValueRegex, iosAnnotation + "$1");
+                    inserted = true;
+                }
+            }
+
+            // Вариант В: Fallback прямо над методом
+            if (!inserted && elementIdentifier != null && content.contains(elementIdentifier)) {
+                content = content.replaceFirst("(?m)^(\\s*.*" + Pattern.quote(elementIdentifier) + ")", "    " + iosAnnotation + "$1");
+                inserted = true;
+            }
+
+            if (inserted) {
+                Files.writeString(path, content);
+                System.out.println("  [Code Updated] Реальный локатор @" + iosAnnotation.trim() + " добавлен в " + fileName);
+            }
+
         } catch (IOException e) {
             System.err.println("Ошибка записи в Page Object: " + e.getMessage());
         }
+    }
+
+    private String extractBaseName(String identifier) {
+        if (identifier == null) return "";
+        // Убираем enter, click, is, get, Displayed, Button, Field
+        return identifier.replaceAll("^(enter|click|is|get|open)", "")
+                .replaceAll("(Displayed|ErrorDisplayed)$", "")
+                .toLowerCase();
     }
 
     private String convertStrategyToAnnotationParam(String strategy) {
@@ -376,7 +475,14 @@ public class MigrationRunnerDryRun {
 
     private String getPageSource(McpSyncClient client) {
         McpSchema.CallToolResult result = client.callTool(new McpSchema.CallToolRequest("appium_get_page_source", Map.of()));
-        return result.content().toString();
+
+        if (result.content() != null && !result.content().isEmpty()) {
+            var first = result.content().get(0);
+            if (first instanceof McpSchema.TextContent textContent) {
+                return textContent.text();
+            }
+        }
+        return result.content() != null ? result.content().toString() : "";
     }
 
 //    private McpSyncClient createAndroidClient() {
