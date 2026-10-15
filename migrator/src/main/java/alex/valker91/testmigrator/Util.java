@@ -1,4 +1,4 @@
-package alex.valker91.util;
+package alex.valker91.testmigrator;
 
 public class Util {
 
