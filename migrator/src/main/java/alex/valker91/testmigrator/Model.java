@@ -1,10 +1,4 @@
-package alex.valker91.tm;
-
-import dev.langchain4j.model.chat.ChatModel;
-import dev.langchain4j.model.openai.OpenAiChatModel;
-
-import java.time.Duration;
-import java.util.Map;
+package alex.valker91.testmigrator;
 
 public class Model {
 
