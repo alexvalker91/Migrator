@@ -21,6 +21,8 @@
         <langchain4j.version>1.21.0</langchain4j.version>
         <mcp.version>2.0.1</mcp.version>
         <javaparser.version>3.27.0</javaparser.version>
+        <!-- same line as the Jackson 2 that LangChain4j brings in -->
+        <jackson.version>2.22.1</jackson.version>
         <slf4j.version>2.0.17</slf4j.version>
         <logback.version>1.5.32</logback.version>
         <junit.version>5.13.4</junit.version>
@@ -37,6 +39,13 @@
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
                 <version>${junit.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

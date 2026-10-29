@@ -111,4 +111,23 @@ class LlmModelTest {
         assertThat(withoutReasoning.fallsBackFromReasoning(true)).isTrue();
         assertThat(withReasoning.fallsBackFromReasoning(true)).isFalse();
     }
+
+    @Test
+    void deploymentChainTriesReasoningAlternativesThenBaseChain() {
+        TierModelConfig tier = new TierModelConfig(LlmTier.TIER_1, "opus", Optional.of("astra-reasoning"), true,
+                List.of("sol", "opus@default"), List.of("sol-reasoning"));
+
+        assertThat(tier.deploymentChain(true))
+                .containsExactly("astra-reasoning", "sol-reasoning", "opus", "sol", "opus@default");
+        assertThat(tier.deploymentChain(false)).containsExactly("opus", "sol", "opus@default");
+        assertThat(tier.allModelIds()).hasSize(5);
+    }
+
+    @Test
+    void reasoningFallbacksRequireAReasoningDeployment() {
+        assertThatThrownBy(() -> new TierModelConfig(LlmTier.TIER_3, "haiku", Optional.empty(), true,
+                List.of(), List.of("nano-reasoning")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("reasoningModelId");
+    }
 }

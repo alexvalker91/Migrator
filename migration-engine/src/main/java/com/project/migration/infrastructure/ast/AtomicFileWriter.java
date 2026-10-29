@@ -1,12 +1,10 @@
 package com.project.migration.infrastructure.ast;
 
 import com.project.migration.domain.exception.CodeModificationException;
+import com.project.migration.infrastructure.fs.AtomicFiles;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,12 +46,6 @@ final class AtomicFileWriter {
     }
 
     private static void replace(Path file, String content) throws IOException {
-        Path temp = Files.createTempFile(file.getParent(), "." + file.getFileName(), ".tmp");
-        try {
-            Files.writeString(temp, content, StandardCharsets.UTF_8);
-            Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-        } finally {
-            Files.deleteIfExists(temp);
-        }
+        AtomicFiles.writeString(file, content);
     }
 }

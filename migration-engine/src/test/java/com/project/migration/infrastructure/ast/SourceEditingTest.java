@@ -47,7 +47,8 @@ class SourceEditingTest {
     @Test
     void failedWriteRestoresAlreadyWrittenFiles() throws IOException {
         Path first = Files.writeString(dir.resolve("First.java"), "original");
-        Path unwritable = dir.resolve("missing-dir/Second.java");
+        Path unwritable = Files.createDirectories(dir.resolve("Second.java")); // non-empty directory: cannot be replaced
+        Files.writeString(unwritable.resolve("keep"), "x");
         Map<Path, String> contents = new LinkedHashMap<>();
         contents.put(first, "changed");
         contents.put(unwritable, "changed");
@@ -58,7 +59,8 @@ class SourceEditingTest {
                 .hasMessageContaining("restored");
         assertThat(Files.readString(first)).isEqualTo("original");
         try (var files = Files.list(dir)) {
-            assertThat(files.map(path -> path.getFileName().toString())).containsExactly("First.java");
+            assertThat(files.map(path -> path.getFileName().toString()))
+                    .containsExactlyInAnyOrder("First.java", "Second.java");
         }
     }
 }

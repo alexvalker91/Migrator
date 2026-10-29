@@ -62,8 +62,12 @@ class TelemetryModelTest {
                         new TokenSavings(SavingsSource.SNAPSHOT_CACHE, 500)),
                 new CacheStatistics(3, 1),
                 Map.of(LlmTier.TIER_1, new BigDecimal("0.30"), LlmTier.TIER_2, new BigDecimal("0.05")),
-                new BigDecimal("0.02"));
+                new BigDecimal("0.02"),
+                Map.of(MigrationStage.STAGE_2_SNAPSHOTS, Duration.ofSeconds(40)),
+                Duration.ofSeconds(90));
 
+        assertThat(snapshot.stageDuration(MigrationStage.STAGE_2_SNAPSHOTS)).isEqualTo(Duration.ofSeconds(40));
+        assertThat(snapshot.stageDuration(MigrationStage.STAGE_3_CODEGEN)).isZero();
         assertThat(snapshot.usageByTier()).containsEntry(LlmTier.TIER_2, new TokenUsage(80, 8, 0, 10));
         assertThat(snapshot.totalUsage()).isEqualTo(new TokenUsage(180, 18, 5, 10));
         assertThat(snapshot.totalCost()).isEqualByComparingTo("0.35");
