@@ -2,6 +2,8 @@ package com.project.migration.infrastructure.ast;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.project.migration.domain.model.analysis.ComplexityMarker;
+import com.project.migration.domain.model.code.BodyInspection;
+import com.project.migration.domain.model.code.FieldRef;
 import com.project.migration.domain.model.code.FrameworkContract;
 import com.project.migration.domain.model.code.LocatorField;
 import com.project.migration.domain.model.code.MethodRef;
@@ -26,6 +28,7 @@ public final class JavaParserAstAdapter implements CodeAnalyzerPort {
     private final CallTreeResolver callTrees;
     private final LocatorFieldFinder locators;
     private final ComplexityMarkerDetector markers;
+    private final BodyInspector bodies;
     private final JavaParserCodeModifier modifier;
 
     public JavaParserAstAdapter(EngineConfig config) {
@@ -41,6 +44,7 @@ public final class JavaParserAstAdapter implements CodeAnalyzerPort {
         this.callTrees = new CallTreeResolver(index, new CallTargetResolver(index), framework);
         this.locators = new LocatorFieldFinder(index);
         this.markers = new ComplexityMarkerDetector(index, framework);
+        this.bodies = new BodyInspector(index, markers, framework);
         this.modifier = new JavaParserCodeModifier(index);
     }
 
@@ -73,6 +77,23 @@ public final class JavaParserAstAdapter implements CodeAnalyzerPort {
     @Override
     public Set<ComplexityMarker> detectComplexityMarkers(MethodRef method) {
         return markers.detect(method);
+    }
+
+    @Override
+    public Set<ComplexityMarker> detectComplexityMarkers(TestMethodRef test) {
+        return tests.declaration(test)
+                .map(declaration -> markers.detect(SourceLookup.refOf(test.classFqcn(), declaration)))
+                .orElse(Set.of());
+    }
+
+    @Override
+    public List<String> statementsUsingField(MethodRef method, FieldRef field) {
+        return locators.statementsUsing(method, field);
+    }
+
+    @Override
+    public BodyInspection inspectBody(MethodRef method, String newBody) {
+        return bodies.inspect(method, newBody);
     }
 
     @Override

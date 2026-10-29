@@ -5,10 +5,14 @@ import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.project.migration.domain.model.Platform;
 import com.project.migration.domain.model.code.FrameworkContract;
+import com.project.migration.domain.model.config.AgentLoopConfig;
 import com.project.migration.domain.model.config.EngineConfig;
+import com.project.migration.domain.model.config.McpServerConfig;
 import com.project.migration.domain.model.llm.LlmTier;
 import com.project.migration.domain.model.llm.TierModelConfig;
+import com.project.migration.domain.model.mcp.McpToolCall;
 import com.project.migration.domain.model.telemetry.ModelPricing;
 import com.project.migration.infrastructure.json.JsonMappers;
 
@@ -18,12 +22,15 @@ import java.io.UncheckedIOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Builds {@link EngineConfig} from {@code engine-defaults.json} (classpath) deep-merged with an optional override
@@ -37,7 +44,19 @@ public final class JsonEngineConfigLoader {
     static final int SCHEMA_VERSION = 1;
 
     record ConfigJson(int schemaVersion, int stabilityRuns, int maxHealingAttempts, Map<LlmTier, TierJson> tiers,
-                      Map<String, PricingJson> modelPricing) {
+                      Map<String, PricingJson> modelPricing, Map<Platform, McpServerJson> mcpServers,
+                      AgentLoopJson agentLoop) {
+    }
+
+    record McpServerJson(String command, List<String> args, Map<String, String> env,
+                         List<StartupCallJson> startupCalls, String appId, long startupTimeoutSeconds) {
+    }
+
+    record StartupCallJson(String tool, JsonNode arguments) {
+    }
+
+    record AgentLoopJson(int maxSteps, int maxStepsWithoutProgress, long maxTokens, long toolCallTimeoutSeconds,
+                         int maxToolResultChars, List<String> allowedTools) {
     }
 
     record TierJson(String modelId, List<String> fallbackModelIds, String reasoningModelId,
@@ -99,7 +118,35 @@ public final class JsonEngineConfigLoader {
         Path root = projectRoot.toAbsolutePath().normalize();
         return new EngineConfig(root, root.resolve(".migration"), root.resolve("migration_reports"), showReasoning,
                 config.stabilityRuns(), config.maxHealingAttempts(), tiers, List.copyOf(pricing.values()),
-                List.of(), FrameworkContract.DEFAULT);
+                List.of(), FrameworkContract.DEFAULT, toMcpServers(config.mcpServers()), toAgentLoop(config.agentLoop()));
+    }
+
+    private static Map<Platform, McpServerConfig> toMcpServers(Map<Platform, McpServerJson> servers) {
+        Map<Platform, McpServerConfig> result = new EnumMap<>(Platform.class);
+        if (servers != null) {
+            servers.forEach((platform, server) -> result.put(platform, new McpServerConfig(server.command(),
+                    orEmpty(server.args()), server.env() == null ? Map.of() : server.env(),
+                    orEmptyCalls(server.startupCalls()), Optional.ofNullable(server.appId()),
+                    Duration.ofSeconds(server.startupTimeoutSeconds()))));
+        }
+        return result;
+    }
+
+    private static List<McpToolCall> orEmptyCalls(List<StartupCallJson> calls) {
+        if (calls == null) {
+            return List.of();
+        }
+        return calls.stream().map(call -> new McpToolCall(call.tool(),
+                call.arguments() == null ? "{}" : call.arguments().toString())).toList();
+    }
+
+    private static AgentLoopConfig toAgentLoop(AgentLoopJson loop) {
+        if (loop == null) {
+            return AgentLoopConfig.DEFAULT;
+        }
+        return new AgentLoopConfig(loop.maxSteps(), loop.maxStepsWithoutProgress(), loop.maxTokens(),
+                Duration.ofSeconds(loop.toolCallTimeoutSeconds()), loop.maxToolResultChars(),
+                Set.copyOf(orEmpty(loop.allowedTools())));
     }
 
     private static ModelPricing toPricing(String modelId, PricingJson json) {

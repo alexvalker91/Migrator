@@ -28,5 +28,39 @@
       "pricing": {"input_per_1m": 0.25, "output_per_1m": 1.25, "reasoning_per_1m": 1.25, "cached_input_per_1m": 0.03}
     }
   },
-  "model_pricing": {}
+  "model_pricing": {},
+  "mcp_servers": {
+    "ANDROID": {
+      "command": "npx",
+      "args": ["-y", "appium-mcp@1.99.1"],
+      "env": {"CAPABILITIES_CONFIG": "${MIGRATION_ANDROID_CAPABILITIES}"},
+      "startup_calls": [
+        {"tool": "select_device", "arguments": {"platform": "android"}},
+        {"tool": "appium_session_management", "arguments": {"action": "create", "platform": "android"}}
+      ],
+      "startup_timeout_seconds": 180
+    },
+    "IOS": {
+      "command": "npx",
+      "args": ["-y", "appium-mcp@1.99.1"],
+      "env": {"CAPABILITIES_CONFIG": "${MIGRATION_IOS_CAPABILITIES}"},
+      "startup_calls": [
+        {"tool": "select_device", "arguments": {"platform": "ios", "iosDeviceType": "simulator"}},
+        {"tool": "appium_session_management", "arguments": {"action": "create", "platform": "ios"}}
+      ],
+      "startup_timeout_seconds": 180
+    }
+  },
+  "agent_loop": {
+    "max_steps": 30,
+    "max_steps_without_progress": 8,
+    "max_tokens": 150000,
+    "tool_call_timeout_seconds": 60,
+    "max_tool_result_chars": 12000,
+    "allowed_tools": [
+      "appium_find_element", "appium_find_elements", "appium_gesture", "appium_set_value", "appium_get_text",
+      "appium_get_page_source", "appium_screenshot", "appium_app_lifecycle", "appium_mobile_press_key",
+      "appium_alert", "appium_get_active_element"
+    ]
+  }
 }

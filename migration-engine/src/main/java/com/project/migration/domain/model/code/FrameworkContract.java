@@ -26,6 +26,11 @@ public record FrameworkContract(String basePageFqcn, String baseTestFqcn, Set<St
     public static final String OPEN_SYSTEM_NOTIFICATIONS = "openSystemNotifications";
     public static final String GET_CLEAN_TEXT = "getCleanText";
 
+    /** Names of the helpers; generated code may call only these on {@code BasePage}. */
+    public static final Set<String> HELPER_NAMES = Set.of(
+            WAIT_FOR_LOADING_TO_DISAPPEAR, SCROLL_TO_ELEMENT_BY_TEXT, SCROLL_INSIDE_CONTAINER, NAVIGATE_BACK,
+            SAFE_HIDE_KEYBOARD, DISMISS_BOTTOM_SHEET_BY_SWIPE, OPEN_SYSTEM_NOTIFICATIONS, GET_CLEAN_TEXT);
+
     /** Signatures of the helpers, as given to the LLM when it adapts platform-specific code. */
     public static final List<String> HELPER_SIGNATURES = List.of(
             "void " + WAIT_FOR_LOADING_TO_DISAPPEAR + "()",

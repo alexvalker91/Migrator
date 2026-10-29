@@ -1,6 +1,8 @@
 package com.project.migration.domain.port;
 
 import com.project.migration.domain.model.analysis.ComplexityMarker;
+import com.project.migration.domain.model.code.BodyInspection;
+import com.project.migration.domain.model.code.FieldRef;
 import com.project.migration.domain.model.code.LocatorField;
 import com.project.migration.domain.model.code.MethodRef;
 import com.project.migration.domain.model.code.TestMethodRef;
@@ -29,6 +31,22 @@ public interface CodeAnalyzerPort {
     List<LocatorField> findLocatorFields(MethodRef method);
 
     Set<ComplexityMarker> detectComplexityMarkers(MethodRef method);
+
+    /** Markers in the body of the test method itself (inline locators, platform calls written in the test). */
+    Set<ComplexityMarker> detectComplexityMarkers(TestMethodRef test);
+
+    /**
+     * Top-level statements of {@code method}'s body that read {@code field}, in source order, in the normalised
+     * form accepted as an anchor by {@code InsertCallBefore}.
+     */
+    List<String> statementsUsingField(MethodRef method, FieldRef field);
+
+    /**
+     * Checks a candidate body for {@code method} without writing anything: it must parse, contain no
+     * Android-specific constructs and call only existing methods (framework helpers: the documented ones).
+     * An unknown method yields an inspection with a syntax error.
+     */
+    BodyInspection inspectBody(MethodRef method, String newBody);
 
     Set<String> findTestGroups(TestMethodRef test);
 

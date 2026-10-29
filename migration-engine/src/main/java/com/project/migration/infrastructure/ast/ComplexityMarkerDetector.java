@@ -49,9 +49,14 @@ final class ComplexityMarkerDetector {
         if (method.isEmpty() || method.get().getBody().isEmpty()) {
             return Set.of();
         }
+        return detectIn(method.get().getBody().get(), ref);
+    }
+
+    /** Markers inside {@code body}, attributed to {@code location}; the body need not belong to the source tree. */
+    Set<ComplexityMarker> detectIn(Node body, MethodRef location) {
         Set<ComplexityMarker> markers = new LinkedHashSet<>();
-        method.get().getBody().get().walk(Node.TreeTraversal.PREORDER, node -> classify(node).ifPresent(
-                type -> markers.add(new ComplexityMarker(type, ref, detail(node)))));
+        body.walk(Node.TreeTraversal.PREORDER, node -> classify(node).ifPresent(
+                type -> markers.add(new ComplexityMarker(type, location, detail(node)))));
         return Set.copyOf(markers);
     }
 

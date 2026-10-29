@@ -30,6 +30,13 @@ public interface McpClientPort extends AutoCloseable {
 
     ImageAttachment takeScreenshot();
 
+    /**
+     * Clean restart of the app under test (terminate + activate), as {@code BaseTest} does before every test.
+     *
+     * @throws McpException when no app id is configured for the platform or the restart fails
+     */
+    void restartApp();
+
     /** Ends the Appium session and stops the server process. Idempotent. */
     @Override
     void close();

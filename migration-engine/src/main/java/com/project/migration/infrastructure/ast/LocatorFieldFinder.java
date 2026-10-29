@@ -9,6 +9,7 @@ import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
+import com.github.javaparser.ast.stmt.Statement;
 import com.project.migration.domain.model.code.FieldRef;
 import com.project.migration.domain.model.code.LocatorField;
 import com.project.migration.domain.model.code.MethodRef;
@@ -18,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -60,10 +62,41 @@ final class LocatorFieldFinder {
                 return SourceLookup.annotation(field.get(), ANDROID_ANNOTATIONS).map(android -> new LocatorField(
                         new FieldRef(owner, fieldName),
                         sourceForm(android),
-                        SourceLookup.annotation(field.get(), IOS_ANNOTATIONS).map(LocatorFieldFinder::sourceForm)));
+                        SourceLookup.annotation(field.get(), IOS_ANNOTATIONS).map(LocatorFieldFinder::sourceForm),
+                        isCollection(field.get())));
             }
         }
         return Optional.empty();
+    }
+
+    /**
+     * Top-level statements of the method body that read {@code field}, normalised like an
+     * {@code InsertCallBefore} anchor.
+     */
+    List<String> statementsUsing(MethodRef ref, FieldRef field) {
+        Optional<MethodDeclaration> method = index.type(ref.classFqcn()).flatMap(type -> SourceLookup.findMethod(type, ref));
+        if (method.isEmpty() || method.get().getBody().isEmpty()) {
+            return List.of();
+        }
+        List<String> statements = new ArrayList<>();
+        for (Statement statement : method.get().getBody().get().getStatements()) {
+            boolean reads = fieldUsages(method.get()).stream().anyMatch(usage -> isInside(usage, statement)
+                    && (usage instanceof NameExpr name ? name.getNameAsString() : ((FieldAccessExpr) usage).getNameAsString())
+                    .equals(field.fieldName()));
+            if (reads) {
+                statements.add(Snippets.normalized(statement));
+            }
+        }
+        return List.copyOf(statements);
+    }
+
+    private static boolean isInside(Node node, Node ancestor) {
+        return node == ancestor || node.getParentNode().filter(parent -> isInside(parent, ancestor)).isPresent();
+    }
+
+    private static boolean isCollection(FieldDeclaration field) {
+        String type = SourceLookup.simpleName(ProjectSourceIndex.stripGenerics(field.getCommonType().asString()));
+        return Set.of("List", "Collection", "Set", "Iterable").contains(type);
     }
 
     private static List<Node> fieldUsages(MethodDeclaration method) {

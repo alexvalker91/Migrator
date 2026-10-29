@@ -8,11 +8,14 @@ import com.project.migration.domain.model.screen.ScreenStateKey;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * Result of Stage 1: what still has to be done for a test class after subtracting everything already
  * {@code VERIFIED_STABLE} in the cache.
+ *
+ * @param screenOfClass screen each Page Object class of the call trees belongs to (by class FQCN)
  */
 public record MigrationTaskDelta(
         String testClassFqcn,
@@ -21,7 +24,8 @@ public record MigrationTaskDelta(
         Set<FieldRef> locatorsToMap,
         Set<MethodRef> stepsToAdapt,
         Set<MethodRef> alreadyVerifiedSteps,
-        Set<ScreenId> alreadyVerifiedScreens) {
+        Set<ScreenId> alreadyVerifiedScreens,
+        Map<String, ScreenId> screenOfClass) {
 
     public MigrationTaskDelta {
         Checks.notBlank(testClassFqcn, "testClassFqcn");
@@ -31,11 +35,16 @@ public record MigrationTaskDelta(
         stepsToAdapt = Set.copyOf(Checks.notNull(stepsToAdapt, "stepsToAdapt"));
         alreadyVerifiedSteps = Set.copyOf(Checks.notNull(alreadyVerifiedSteps, "alreadyVerifiedSteps"));
         alreadyVerifiedScreens = Set.copyOf(Checks.notNull(alreadyVerifiedScreens, "alreadyVerifiedScreens"));
+        screenOfClass = Map.copyOf(Checks.notNull(screenOfClass, "screenOfClass"));
         Set<MethodRef> overlap = new HashSet<>(stepsToAdapt);
         overlap.retainAll(alreadyVerifiedSteps);
         if (!overlap.isEmpty()) {
             throw new IllegalArgumentException("steps both to adapt and already verified: " + overlap);
         }
+    }
+
+    public static MigrationTaskDelta empty(String testClassFqcn) {
+        return new MigrationTaskDelta(testClassFqcn, List.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Map.of());
     }
 
     /** Nothing left to snapshot, map or adapt — Stages 2–3 can be skipped. */

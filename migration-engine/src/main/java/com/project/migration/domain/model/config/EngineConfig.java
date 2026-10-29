@@ -1,6 +1,7 @@
 package com.project.migration.domain.model.config;
 
 import com.project.migration.domain.model.Checks;
+import com.project.migration.domain.model.Platform;
 import com.project.migration.domain.model.code.FrameworkContract;
 import com.project.migration.domain.model.llm.LlmTier;
 import com.project.migration.domain.model.llm.TierModelConfig;
@@ -9,6 +10,7 @@ import com.project.migration.domain.model.telemetry.ModelPricing;
 import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -22,6 +24,8 @@ import java.util.Set;
  * @param sourceRoots  Java source roots of the target project; empty = every {@code src/main/java} and
  *                     {@code src/test/java} found under {@code projectRoot}
  * @param framework    base classes and helper contract of the target project
+ * @param mcpServers   Appium MCP server per platform; a platform without an entry cannot open a session
+ * @param agentLoop    limits and tool whitelist of LLM tool-calling runs
  */
 public record EngineConfig(
         Path projectRoot,
@@ -33,7 +37,9 @@ public record EngineConfig(
         List<TierModelConfig> tierModels,
         List<ModelPricing> pricing,
         List<Path> sourceRoots,
-        FrameworkContract framework) {
+        FrameworkContract framework,
+        Map<Platform, McpServerConfig> mcpServers,
+        AgentLoopConfig agentLoop) {
 
     public static final int DEFAULT_STABILITY_RUNS = 3;
     public static final int DEFAULT_MAX_HEALING_ATTEMPTS = 3;
@@ -65,6 +71,8 @@ public record EngineConfig(
         }
         sourceRoots = List.copyOf(Checks.notNull(sourceRoots, "sourceRoots"));
         Checks.notNull(framework, "framework");
+        mcpServers = Map.copyOf(Checks.notNull(mcpServers, "mcpServers"));
+        Checks.notNull(agentLoop, "agentLoop");
     }
 
     /**
@@ -75,17 +83,27 @@ public record EngineConfig(
             Path projectRoot, boolean showReasoning, List<TierModelConfig> tierModels, List<ModelPricing> pricing) {
         return new EngineConfig(projectRoot, projectRoot.resolve(".migration"), projectRoot.resolve("migration_reports"),
                 showReasoning, DEFAULT_STABILITY_RUNS, DEFAULT_MAX_HEALING_ATTEMPTS, tierModels, pricing,
-                List.of(), FrameworkContract.DEFAULT);
+                List.of(), FrameworkContract.DEFAULT, Map.of(), AgentLoopConfig.DEFAULT);
     }
 
     public EngineConfig withSourceRoots(List<Path> roots) {
         return new EngineConfig(projectRoot, migrationDir, reportsDir, showReasoning, stabilityRuns,
-                maxHealingAttempts, tierModels, pricing, roots, framework);
+                maxHealingAttempts, tierModels, pricing, roots, framework, mcpServers, agentLoop);
     }
 
     public EngineConfig withFramework(FrameworkContract contract) {
         return new EngineConfig(projectRoot, migrationDir, reportsDir, showReasoning, stabilityRuns,
-                maxHealingAttempts, tierModels, pricing, sourceRoots, contract);
+                maxHealingAttempts, tierModels, pricing, sourceRoots, contract, mcpServers, agentLoop);
+    }
+
+    public EngineConfig withMcpServers(Map<Platform, McpServerConfig> servers) {
+        return new EngineConfig(projectRoot, migrationDir, reportsDir, showReasoning, stabilityRuns,
+                maxHealingAttempts, tierModels, pricing, sourceRoots, framework, servers, agentLoop);
+    }
+
+    public EngineConfig withAgentLoop(AgentLoopConfig loop) {
+        return new EngineConfig(projectRoot, migrationDir, reportsDir, showReasoning, stabilityRuns,
+                maxHealingAttempts, tierModels, pricing, sourceRoots, framework, mcpServers, loop);
     }
 
     public TierModelConfig modelFor(LlmTier tier) {

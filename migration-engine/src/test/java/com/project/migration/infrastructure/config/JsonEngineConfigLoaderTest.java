@@ -1,8 +1,12 @@
 package com.project.migration.infrastructure.config;
 
+import com.project.migration.domain.model.Platform;
+import com.project.migration.domain.model.config.AgentLoopConfig;
 import com.project.migration.domain.model.config.EngineConfig;
+import com.project.migration.domain.model.config.McpServerConfig;
 import com.project.migration.domain.model.llm.LlmTier;
 import com.project.migration.domain.model.llm.TierModelConfig;
+import com.project.migration.domain.model.mcp.McpToolCall;
 import com.project.migration.domain.model.telemetry.ModelPricing;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -34,6 +38,44 @@ class JsonEngineConfigLoaderTest {
         assertThat(config.showReasoning()).isTrue();
         assertThat(config.stabilityRuns()).isEqualTo(3);
         assertThat(config.migrationDir()).isEqualTo(dir.toAbsolutePath().normalize().resolve(".migration"));
+    }
+
+    @Test
+    void defaultsPinTheMcpServersAndLimitTheAgentLoop() {
+        EngineConfig config = loader.load(dir, false, Optional.empty());
+
+        McpServerConfig android = config.mcpServers().get(Platform.ANDROID);
+        assertThat(android.command()).isEqualTo("npx");
+        assertThat(android.args()).containsExactly("-y", "appium-mcp@1.99.1");
+        assertThat(android.env()).containsEntry("CAPABILITIES_CONFIG", "${MIGRATION_ANDROID_CAPABILITIES}");
+        assertThat(android.startupCalls()).extracting(McpToolCall::tool)
+                .containsExactly("select_device", "appium_session_management");
+        assertThat(android.startupCalls().get(1).argumentsJson()).contains("\"action\":\"create\"");
+        assertThat(android.appId()).isEmpty();
+        assertThat(config.mcpServers()).containsKey(Platform.IOS);
+
+        AgentLoopConfig loop = config.agentLoop();
+        assertThat(loop.maxSteps()).isEqualTo(30);
+        assertThat(loop.maxStepsWithoutProgress()).isEqualTo(8);
+        assertThat(loop.maxTokens()).isEqualTo(150_000);
+        assertThat(loop.toolCallTimeout()).hasSeconds(60);
+        assertThat(loop.allowedTools()).contains("appium_gesture").doesNotContain("appium_session_management",
+                "appium_generate_tests", "appium_mobile_file", "select_device");
+    }
+
+    @Test
+    void overrideSetsTheAppIdAndNarrowsTheLoop() throws IOException {
+        Path override = dir.resolve("override.json");
+        Files.writeString(override, """
+                {"mcp_servers": {"IOS": {"app_id": "com.bank.app"}}, "agent_loop": {"max_steps": 12}}
+                """);
+
+        EngineConfig config = loader.load(dir, false, Optional.of(override));
+
+        assertThat(config.mcpServers().get(Platform.IOS).appId()).contains("com.bank.app");
+        assertThat(config.mcpServers().get(Platform.IOS).command()).isEqualTo("npx");
+        assertThat(config.agentLoop().maxSteps()).isEqualTo(12);
+        assertThat(config.agentLoop().maxTokens()).isEqualTo(150_000);
     }
 
     @Test
