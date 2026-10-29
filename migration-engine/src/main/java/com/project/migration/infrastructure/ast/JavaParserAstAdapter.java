@@ -110,6 +110,11 @@ public final class JavaParserAstAdapter implements CodeAnalyzerPort {
     }
 
     @Override
+    public Optional<String> testSource(TestMethodRef test) {
+        return tests.declaration(test).flatMap(declaration -> declaration.getTokenRange().map(Object::toString));
+    }
+
+    @Override
     public Optional<Path> sourceFileOf(String classFqcn) {
         return index.fileOf(classFqcn);
     }

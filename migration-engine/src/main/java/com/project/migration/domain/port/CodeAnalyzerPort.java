@@ -52,5 +52,8 @@ public interface CodeAnalyzerPort {
 
     Optional<String> methodSource(MethodRef method);
 
+    /** Source of the {@code @Test} method as written, with its annotations. */
+    Optional<String> testSource(TestMethodRef test);
+
     Optional<Path> sourceFileOf(String classFqcn);
 }
