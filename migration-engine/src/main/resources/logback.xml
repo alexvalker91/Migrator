@@ -8,7 +8,10 @@
         </encoder>
     </appender>
 
-    <logger name="dev.langchain4j" level="INFO"/>
+    <!-- LangChain4j logs full HTTP requests/responses (prompts, base64 screenshots) at INFO because the DIAL
+         contract sets logRequests/logResponses: keep them off the console; LlmWireLog routes them to
+         migration_reports/<Class>/llm_wire.log when -Dmigration.llm.wireLog=true. -->
+    <logger name="dev.langchain4j" level="WARN"/>
     <logger name="io.modelcontextprotocol" level="WARN"/>
 
     <root level="WARN">
