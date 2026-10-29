@@ -84,6 +84,11 @@ public final class JavaParserAstAdapter implements CodeAnalyzerPort {
     }
 
     @Override
+    public List<LocatorField> listLocatorFields(String classFqcn) {
+        return locators.fieldsOf(classFqcn);
+    }
+
+    @Override
     public Set<ComplexityMarker> detectComplexityMarkers(MethodRef method) {
         return markers.detect(method);
     }

@@ -36,6 +36,9 @@ public interface CodeAnalyzerPort {
     /** Locator fields ({@code @AndroidFindBy}) a method uses directly. */
     List<LocatorField> findLocatorFields(MethodRef method);
 
+    /** Every locator field of the class and its project superclasses, in declaration order. */
+    List<LocatorField> listLocatorFields(String classFqcn);
+
     Set<ComplexityMarker> detectComplexityMarkers(MethodRef method);
 
     /** Markers in the body of the test method itself (inline locators, platform calls written in the test). */

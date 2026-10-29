@@ -1,6 +1,5 @@
 package com.project.migration.application.codegen;
 
-import com.project.migration.domain.exception.CodeModificationException;
 import com.project.migration.domain.model.Checks;
 import com.project.migration.domain.model.analysis.MigrationTaskDelta;
 import com.project.migration.domain.model.analysis.PlatformScope;
@@ -16,7 +15,6 @@ import com.project.migration.domain.model.code.FrameworkContract;
 import com.project.migration.domain.model.code.InsertCallBefore;
 import com.project.migration.domain.model.code.LocatorField;
 import com.project.migration.domain.model.code.MethodRef;
-import com.project.migration.domain.model.code.ModificationResult;
 import com.project.migration.domain.model.code.ReplaceMethodBody;
 import com.project.migration.domain.model.code.TestMethodRef;
 import com.project.migration.domain.model.codegen.CodeAdaptationResult;
@@ -50,7 +48,7 @@ import java.util.Set;
 public final class CodeAdaptationService implements CodeAdapter {
 
     private final CodeAnalyzerPort analyzer;
-    private final CodeModifierPort modifier;
+    private final ResilientApplier applier;
     private final CacheRepositoryPort cache;
     private final MigrationLoggerPort logger;
     private final Clock clock;
@@ -61,7 +59,7 @@ public final class CodeAdaptationService implements CodeAdapter {
                                  SnapshotRepositoryPort snapshots, LlmClientPort llm, MigrationLoggerPort logger,
                                  Clock clock) {
         this.analyzer = Checks.notNull(analyzer, "analyzer");
-        this.modifier = Checks.notNull(modifier, "modifier");
+        this.applier = new ResilientApplier(Checks.notNull(modifier, "modifier"), logger);
         this.cache = Checks.notNull(cache, "cache");
         this.logger = Checks.notNull(logger, "logger");
         this.clock = Checks.notNull(clock, "clock");
@@ -97,7 +95,7 @@ public final class CodeAdaptationService implements CodeAdapter {
         List<AddTestGroups> tags = androidOnlyTags(delta.tasks());
         changes.addAll(tags);
 
-        Applied applied = applyResiliently(changes);
+        ResilientApplier.Applied applied = applier.apply(changes);
 
         List<MappedLocator> mapped = new ArrayList<>();
         List<UnresolvedLocator> unresolved = new ArrayList<>(mapping.unresolved());
@@ -168,36 +166,6 @@ public final class CodeAdaptationService implements CodeAdapter {
                 .map(task -> new AddTestGroups(task.test(), Set.of(AddTestGroups.ANDROID_ONLY))).toList();
     }
 
-    /**
-     * One atomic batch first. If any change is refused nothing was written, so the changes are applied one by
-     * one and only the refused ones are reported.
-     */
-    private Applied applyResiliently(List<CodeChange> changes) {
-        if (changes.isEmpty()) {
-            return new Applied(new ModificationResult(List.of(), 0), Map.of());
-        }
-        try {
-            return new Applied(modifier.apply(changes), Map.of());
-        } catch (CodeModificationException batchFailure) {
-            logger.warn("Batch of " + changes.size() + " changes refused (" + batchFailure.getMessage()
-                    + "); applying them one by one");
-        }
-        Map<CodeChange, String> failures = new LinkedHashMap<>();
-        Set<java.nio.file.Path> files = new LinkedHashSet<>();
-        int count = 0;
-        for (CodeChange change : changes) {
-            try {
-                ModificationResult single = modifier.apply(List.of(change));
-                files.addAll(single.changedFiles());
-                count += single.appliedChanges();
-            } catch (CodeModificationException e) {
-                failures.put(change, e.getMessage());
-                logger.warn("Change refused: " + change + ": " + e.getMessage());
-            }
-        }
-        return new Applied(new ModificationResult(List.copyOf(files), count), failures);
-    }
-
     private void recordInCache(List<MappedLocator> mapped, Map<FieldRef, LocatorField> fields) {
         Map<ScreenId, ScreenCacheEntry> updated = new LinkedHashMap<>();
         for (MappedLocator locator : mapped) {
@@ -217,8 +185,5 @@ public final class CodeAdaptationService implements CodeAdapter {
 
     private static String escape(String text) {
         return text.replace("\\", "\\\\").replace("\"", "\\\"");
-    }
-
-    private record Applied(ModificationResult result, Map<CodeChange, String> failures) {
     }
 }

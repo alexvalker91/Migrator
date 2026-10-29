@@ -15,7 +15,7 @@ import java.util.Map;
  * @param changes     one {@link AddIosLocator} per mapped field
  * @param scrollTexts text to scroll to before using a mapped field whose iOS element is off screen
  */
-record MappingOutcome(
+public record MappingOutcome(
         List<AddIosLocator> changes,
         List<MappedLocator> mapped,
         List<UnresolvedLocator> unresolved,

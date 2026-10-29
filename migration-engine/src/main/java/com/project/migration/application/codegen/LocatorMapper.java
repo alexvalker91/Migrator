@@ -23,6 +23,7 @@ import com.project.migration.domain.port.MigrationLoggerPort;
 import com.project.migration.domain.port.SnapshotRepositoryPort;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -40,19 +41,19 @@ import java.util.stream.Collectors;
  * A field gets exactly one locator; it is cross-checked against the other states where the Android locator
  * finds the element, and a disagreement is reported as a conflict.
  */
-final class LocatorMapper {
+public final class LocatorMapper {
 
     private final SnapshotRepositoryPort snapshots;
     private final LlmClientPort llm;
     private final MigrationLoggerPort logger;
 
-    LocatorMapper(SnapshotRepositoryPort snapshots, LlmClientPort llm, MigrationLoggerPort logger) {
+    public LocatorMapper(SnapshotRepositoryPort snapshots, LlmClientPort llm, MigrationLoggerPort logger) {
         this.snapshots = snapshots;
         this.llm = llm;
         this.logger = logger;
     }
 
-    MappingOutcome map(MigrationTaskDelta delta, Map<FieldRef, LocatorField> fields) {
+    public MappingOutcome map(MigrationTaskDelta delta, Map<FieldRef, LocatorField> fields) {
         Map<ScreenId, List<LocatorField>> byScreen = new LinkedHashMap<>();
         for (FieldRef ref : delta.locatorsToMap()) {
             LocatorField field = fields.get(ref);
@@ -72,13 +73,34 @@ final class LocatorMapper {
         return new MappingOutcome(changes, mapped, unresolved, conflicts, scrollTexts);
     }
 
+    /**
+     * Maps fields that are not tied to one screen (global components) against the snapshot pairs of several
+     * screens: the component is looked for in every state until it is found.
+     */
+    public MappingOutcome mapAcross(Collection<ScreenId> screens, List<LocatorField> fields) {
+        List<AddIosLocator> changes = new ArrayList<>();
+        List<MappedLocator> mapped = new ArrayList<>();
+        List<UnresolvedLocator> unresolved = new ArrayList<>();
+        List<LocatorConflict> conflicts = new ArrayList<>();
+        Map<FieldRef, String> scrollTexts = new LinkedHashMap<>();
+        List<Pair> states = new ArrayList<>();
+        screens.stream().distinct().forEach(screen -> states.addAll(statePairs(screen)));
+        resolve(states, "the screens " + screens, fields, changes, mapped, unresolved, conflicts, scrollTexts);
+        return new MappingOutcome(changes, mapped, unresolved, conflicts, scrollTexts);
+    }
+
     private void mapScreen(ScreenId screen, List<LocatorField> screenFields, List<AddIosLocator> changes,
                            List<MappedLocator> mapped, List<UnresolvedLocator> unresolved,
                            List<LocatorConflict> conflicts, Map<FieldRef, String> scrollTexts) {
-        List<Pair> states = statePairs(screen);
+        resolve(statePairs(screen), "screen " + screen, screenFields, changes, mapped, unresolved, conflicts, scrollTexts);
+    }
+
+    private void resolve(List<Pair> states, String where, List<LocatorField> screenFields, List<AddIosLocator> changes,
+                         List<MappedLocator> mapped, List<UnresolvedLocator> unresolved,
+                         List<LocatorConflict> conflicts, Map<FieldRef, String> scrollTexts) {
         if (states.isEmpty()) {
             screenFields.forEach(f -> unresolved.add(new UnresolvedLocator(f.field(),
-                    "no Android/iOS snapshot pair stored for screen " + screen)));
+                    "no Android/iOS snapshot pair stored for " + where)));
             return;
         }
         Map<FieldRef, Resolution> resolved = new LinkedHashMap<>();
@@ -94,7 +116,7 @@ final class LocatorMapper {
         }
         for (LocatorField field : pending) {
             unresolved.add(new UnresolvedLocator(field.field(), lastProblem.getOrDefault(field.field(),
-                    "element not found in any captured state of " + screen)));
+                    "element not found in any captured state of " + where)));
         }
         Map<FieldRef, LocatorField> byRef = screenFields.stream().collect(Collectors.toMap(LocatorField::field, f -> f));
         resolved.forEach((ref, resolution) -> {

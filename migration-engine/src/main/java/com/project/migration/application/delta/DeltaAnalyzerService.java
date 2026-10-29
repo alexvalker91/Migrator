@@ -59,9 +59,21 @@ public final class DeltaAnalyzerService implements DeltaAnalyzer {
     private final LlmClientPort llm;
     private final TelemetryCollector telemetry;
     private final MigrationLoggerPort logger;
+    private final Set<String> globalComponentClasses;
 
     public DeltaAnalyzerService(CodeAnalyzerPort analyzer, CacheRepositoryPort cache, SnapshotRepositoryPort snapshots,
                                 LlmClientPort llm, TelemetryCollector telemetry, MigrationLoggerPort logger) {
+        this(analyzer, cache, snapshots, llm, telemetry, logger, Set.of());
+    }
+
+    /**
+     * @param globalComponentClasses Page Object classes of global components: their locators are mapped by Stage 0
+     *                               against several screens and are never part of a class's delta
+     */
+    public DeltaAnalyzerService(CodeAnalyzerPort analyzer, CacheRepositoryPort cache, SnapshotRepositoryPort snapshots,
+                                LlmClientPort llm, TelemetryCollector telemetry, MigrationLoggerPort logger,
+                                Set<String> globalComponentClasses) {
+        this.globalComponentClasses = Set.copyOf(Checks.notNull(globalComponentClasses, "globalComponentClasses"));
         this.analyzer = Checks.notNull(analyzer, "analyzer");
         this.cache = Checks.notNull(cache, "cache");
         this.snapshots = Checks.notNull(snapshots, "snapshots");
@@ -102,6 +114,7 @@ public final class DeltaAnalyzerService implements DeltaAnalyzer {
             }
         }
 
+        fields.keySet().removeIf(field -> globalComponentClasses.contains(field.classFqcn()));
         Map<String, ScreenId> screenOfClass = knownScreens(fields.keySet());
         Set<FieldRef> unmapped = fields.values().stream()
                 .filter(field -> !isMapped(field, screenOfClass.get(field.field().classFqcn())))

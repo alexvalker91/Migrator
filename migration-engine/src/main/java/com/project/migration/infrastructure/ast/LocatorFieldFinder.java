@@ -53,6 +53,23 @@ final class LocatorFieldFinder {
         return List.copyOf(fields.values());
     }
 
+    /** All locator fields of the class and its project superclasses; superclass fields first. */
+    List<LocatorField> fieldsOf(String classFqcn) {
+        List<LocatorField> fields = new ArrayList<>();
+        List<String> hierarchy = new ArrayList<>(index.hierarchyOf(classFqcn));
+        java.util.Collections.reverse(hierarchy);
+        for (String owner : hierarchy) {
+            for (FieldDeclaration declaration : index.type(owner).orElseThrow().getFields()) {
+                if (SourceLookup.annotation(declaration, ANDROID_ANNOTATIONS).isEmpty()) {
+                    continue;
+                }
+                declaration.getVariables().forEach(variable ->
+                        locatorField(owner, variable.getNameAsString()).ifPresent(fields::add));
+            }
+        }
+        return List.copyOf(fields);
+    }
+
     /** Locator field {@code fieldName} visible in {@code classFqcn} (declared there or in a project superclass). */
     Optional<LocatorField> locatorField(String classFqcn, String fieldName) {
         for (String owner : index.hierarchyOf(classFqcn)) {
