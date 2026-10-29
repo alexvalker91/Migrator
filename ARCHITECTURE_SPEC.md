@@ -7,12 +7,14 @@
    - Токены (`DIAL_API_KEY`, `MOBITRU_AUTH_TOKEN`) берутся только из переменных окружения.
    - Тестовые пользователи, пин-коды и способы получения OTP берутся из существующей конфигурации проекта и `@BeforeMethod` в `BaseTest` (агент никогда не придумывает фейковые учетные данные при работе с MCP).
 4. **Структура локальной базы знаний (`.migration/`):**
-   - `.migration/migration_cache.json` — главный накопительный JSON-реестр:
+   - `.migration/` и `migration_reports/` находятся в `.gitignore`: база знаний не участвует в ветках `migrate/ios-*` и не задевается откатами Self-Healing. Структура файлов читаемая, её можно закоммитить или перенести вручную.
+   - Реестр шардирован: `.migration/migration_cache.json` — индекс и глобальные разделы, по одному файлу на экран и на класс шагов. Каждая запись атомарна (temp-файл + rename). Доступ — через гранулярный `CacheRepositoryPort` (`findScreen`/`saveScreen`/`saveStep`/…), а не через загрузку и сохранение всего документа.
+   - Логическое содержимое реестра:
      - `global_components`: замапленные сквозные компоненты (`TopAppBar`, `BottomNavBar`, `GlobalLoadingSpinner`, `SystemNotificationShade`).
      - `screens`: статус каждого из 50+ экранов, список его состояний (`ScreenState`), замапленные локаторы (`Android -> iOS`) со статусом `VERIFIED_STABLE`.
      - `steps`: методы Page Object'ов и Step-классов, которые уже прошли проверку `3/3 PASS` на iOS.
      - `ios_learned_rules`: список обнаруженных в ходе миграции правил и особенностей iOS-приложения.
-   - `.migration/snapshots/<ScreenName>/` — хранилище пар очищенных XML-слепков (`_android_clean.xml` и `_ios_clean.xml`) и скриншотов в разрезе **Состояний экрана (`ScreenState`)**:
+   - `.migration/snapshots/<ScreenName>/` — хранилище пар очищенных XML-слепков (`_android_clean.xml` и `_ios_clean.xml`) и скриншотов в разрезе **Состояний экрана (`ScreenState`)**. Ключ слепка — `ScreenStateKey(screen, state, variant)`: `variant` различает несколько экземпляров одного состояния на экране (например, две разные шторки). Имя файла — `state_<STATE>[_<variant>]_<platform>_clean.xml`, вариант `default` в имени опускается:
      - `DEFAULT` — основное состояние экрана с загруженным контентом.
      - `LOADING` — состояние загрузки (спиннер, скелетон, шиммер).
      - `EMPTY` — пустое состояние (нет карт/шаблонов/истории).
@@ -51,6 +53,7 @@
    - Запускает драйвер на ферме Mobitru один раз в `@BeforeClass` (`UiAutomator2Options` для Android, `XCUITestOptions` для iOS с `noReset=true`).
    - В `@BeforeMethod(alwaysRun = true)` выполняет быстрый чистый рестарт приложения за 2 секунды через `terminateApp(appId)` и `activateApp(appId)`.
    - Поддерживает фильтрацию групп TestNG в XML-сьютах: `android-only`, `ios-only` и `ios-needs-fix`.
+   - **Защита корневой сборки от Appium-тестов:** в модуле `migrator` Appium-тесты по умолчанию не запускаются (`skipTests=true` в `migrator/pom.xml` или отдельный профиль `e2e`). Корневой `./mvnw verify` без девайса проходит зелёным (собирает оба модуля и тестирует только движок). Устройственные прогоны включаются явно (`-Pe2e` / `-DskipTests=false`). Этим же механизмом пользуется `MavenTestNgRunnerAdapter` при запуске `-Dtest=Class#method -Dplatform=<platform>`.
 2. **`BasePage` (Инкапсуляция нативных действий Android vs iOS):**
    - `waitForLoadingToDisappear()` — ждет исчезновения глобального спиннера (`ProgressBar` на Android / `XCUIElementTypeActivityIndicator` на iOS).
    - `scrollToElementByText(String text)` — выполняет нативный скролл: `UiScrollable` на Android vs `driver.executeScript("mobile: scroll", Map.of("direction", "down", "predicateString", ...))` на iOS.
@@ -95,6 +98,7 @@
    - Внедряет `waitForLoadingToDisappear()`, `navigateBack()`, `safeHideKeyboard()`, `dismissBottomSheetBySwipe()`, `getCleanText()`.
    - Для чисто платформенных тестов (Google Pay vs Apple Pay) расставляет группы `@Test(groups = {"android-only"})` и `@Test(groups = {"ios-only"})`.
 3. **Проверка компиляции:** Запускается `mvn test-compile` для проверки отсутствия синтаксических ошибок во всем проекте.
+4. **Базовый коммит codegen:** После успешной компиляции создаётся коммит `codegen: <TestClass>`. Он служит базой для откатов Этапа 4: откат неудачного лечения не должен удалять сгенерированный, но ещё не проверенный код для следующих тестов класса.
 
 ### ЭТАП 4. Поштучная Стабилизация «3 из 3 PASS», Git-чекпоинты и Цикл Self-Healing (Tier-1 Vision LLM)
 Берется по очереди каждый `@Test` метод внутри `TestClass.java`:
@@ -105,6 +109,7 @@
      - **Создается локальный Git-чекпоинт (`git commit -m "checkpoint: <method> passed 3/3 on iOS"`)**, фиксирующий рабочее состояние кода.
      - Осуществляется переход к следующему `@Test` методу в классе.
 2. **Цикл Самоизлечения (`SelfHealingService` — при падении на 1-м, 2-м или 3-м прогоне):**
+   - Лечится только исход `FAILED`. `SKIPPED` (упал `@BeforeMethod`) и `ERROR` (Maven/JVM не дали результата) указывают на окружение, а не на смигрированный код: Self-Healing для них не запускается.
    - Максимум **3 попытки самоизлечения** на один тестовый метод.
    - Собирается досье падения: стектрейс из `testng-results.xml`, скриншот экрана iOS в момент падения (`ImageContent`), очищенный через `XmlPageSourceCleaner` XML экрана падения.
    - **Tier-1 LLM (с Vision и Reasoning)** анализирует досье (и при необходимости сверяется с живым iOS/Android MCP):
@@ -112,7 +117,7 @@
      - *Проверка состояний и UI по скриншоту:* не ушел спиннер `LOADING`, клавиатура перекрыла кнопку, не досвайпал нативный скролл, расхождение `label` vs `value` в ассерте.
    - Вносит исправление в код, **обнуляет счетчик успешных прогонов до `0`** и перезапускает проверку `3/3 PASS`.
 3. **Безопасная изоляция при неудаче после 3 попыток Self-Healing:**
-   - Чтобы неудачные эксперименты лечения не сломали предыдущие успешные тесты класса, код откатывается к последнему успешному Git-чекпоинту (`git checkout` измененных в ходе неудачного лечения методов).
+   - Чтобы неудачные эксперименты лечения не сломали предыдущие успешные тесты класса, файлы, изменённые в ходе неудачного лечения, откатываются к последнему чекпоинту (`codegen` или `checkpoint`): `git restore --source=<commit> -- <files>` (`GitServicePort.restoreFiles`). Ветка целиком не откатывается.
    - Проблемный тестовый метод помечается группой `@Test(groups = {"ios-needs-fix"})`.
    - Финальный скриншот падения, стектрейс и подробный технический вердикт от Tier-1 LLM сохраняются для отчета. Конвейер переходит к следующему тесту.
 

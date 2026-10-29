@@ -1,0 +1,17 @@
+<configuration>
+    <!-- Global logging for third-party libraries (LangChain4j request/response logs, MCP SDK).
+         Migration session logs use a private context in LogbackMigrationLogger. -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <logger name="dev.langchain4j" level="INFO"/>
+    <logger name="io.modelcontextprotocol" level="WARN"/>
+
+    <root level="WARN">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

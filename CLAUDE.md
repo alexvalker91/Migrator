@@ -16,9 +16,11 @@
 
 ## 2. Строгие правила архитектуры (Clean Architecture & SOLID)
 1. **Разделение слоев (`com.project.migration`):**
-   - `domain/` — чистые Entities, неизменяемые Value Objects (`record`), Enums (`Platform`, `ScreenState`, `LlmTier`, `MigrationStatus`) и интерфейсы Портов (`port/`). **Строго запрещены зависимости от внешних библиотек и фреймворков в слое `domain`!**
-   - `application/` — Use Cases, бизнес-оркестрация (`TestClassMigrationOrchestrator`), сервисы (`StabilityGateService`, `SelfHealingService`, `DeltaAnalyzerService`), утилита очистки `XmlPageSourceCleaner`. Зависит только от `domain`.
+   - `domain/` — чистые Entities, неизменяемые Value Objects (`record`), Enums (`Platform`, `ScreenState`, `LlmTier`, `TestMigrationStatus`, `VerificationStatus`) и интерфейсы Портов (`port/`). **Строго запрещены зависимости от внешних библиотек и фреймворков в слое `domain`!**
+     Порты (`domain.port`): `LlmClientPort`, `McpClientPort`, `McpClientsPort`, `CacheRepositoryPort`, `SnapshotRepositoryPort`, `CodeAnalyzerPort`, `CodeModifierPort`, `TestRunnerPort`, `GitServicePort`, `ReportGeneratorPort`, `MigrationLoggerPort`. Ожидаемые исходы (упавший тест, ошибки компиляции, промах кеша) возвращаются значениями; инфраструктурные сбои — sealed `MigrationException` (`domain.exception`).
+   - `application/` — Use Cases, бизнес-оркестрация (`TestClassMigrationOrchestrator`), сервисы (`StabilityGateService`, `SelfHealingService`, `DeltaAnalyzerService`), утилита очистки `XmlPageSourceCleaner`. Зависит только от `domain` и JDK (XML — через `javax.xml`/StAX; JSON десериализуется в `infrastructure`). Правила слоёв закреплены тестом `LayerArchitectureTest` (ArchUnit).
    - `infrastructure/` — реализации портов: клиенты LLM на базе **LangChain4j + EPAM AI DIAL** (`DialTieredLlmRouter`), адаптеры `Android MCP` и `iOS MCP` (`DualMcpClientAdapter`), `JsonCacheRepository`, `JavaParserAstAdapter`, `MavenTestNgRunnerAdapter`, `GitServiceAdapter`, `HtmlInfographicReportGenerator`.
+   - **Модули сборки:** корневой `pom.xml` (parent + aggregator) → `migration-engine` (движок, `com.project.migration`) и `migrator` (проект-цель; на боевом проекте передаётся через `--project-root`). Сборка и тесты движка: `./mvnw -pl migration-engine verify` (JUnit 5 + AssertJ + ArchUnit); `./mvnw verify` из корня запускает и Appium-тесты `migrator`, которым нужно устройство.
 2. **Принципы SOLID и Инструменты:**
    - **SRP (Single Responsibility):** Каждый класс решает ровно одну задачу. Не смешивай парсинг XML, HTTP-вызовы LLM, модификацию AST и работу с Git в одном классе.
    - **OCP & DIP (Open/Closed & Dependency Inversion):** Все внешние интеграции (LLM, MCP, Git, Maven, Cache) вызываются из слоя `application` исключительно через интерфейсы из `domain.port`.

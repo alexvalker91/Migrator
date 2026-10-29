@@ -22,3 +22,13 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# Build output
+target/
+
+# macOS
+.DS_Store
+
+# Migration engine local knowledge base and reports (kept out of Self-Healing rollbacks)
+.migration/
+migration_reports/

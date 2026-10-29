@@ -2,20 +2,23 @@
 
 Разработка ведется строго по очереди: 1 Фаза = 1 Сессия -> Компиляция и Unit-тесты -> Отметка `[x]` -> `/clear`.
 
-- [ ] **Фаза 1: Domain Layer, Ports & Logging (`showReasoning`)**
-  - Создание структуры пакетов Clean Architecture (`domain`, `application`, `infrastructure`).
-  - Доменные перечисления (`Platform`, `ScreenState`, `LlmTier`, `TestMigrationStatus`).
-  - Неизменяемые модели (`TokenUsage`, `CleaningResult`, `ScreenElementMapping`, `MigrationTaskDelta`, `TestMethodReport`, `ClassMigrationReport`).
-  - Интерфейсы портов в `domain.port`: `LlmClientPort`, `McpClientPort`, `CacheRepositoryPort`, `AstAnalyzerPort`, `TestRunnerPort`, `GitServicePort`, `ReportGeneratorPort`.
-  - Структурный логгер (`MigrationLogger`) с поддержкой флага `--show-reasoning` и форматированным выводом блоков `[🧠 LLM REASONING]`.
+- [x] **Фаза 1: Domain Layer, Ports & Logging (`showReasoning`)**
+  - Мультимодульная сборка: корневой `pom.xml`, модули `migration-engine` (`com.project.migration`) и `migrator` (проект-цель); Maven Wrapper `./mvnw`.
+  - Структура пакетов Clean Architecture (`domain`, `application`, `infrastructure`); правила слоёв закреплены `LayerArchitectureTest` (ArchUnit).
+  - Доменные перечисления (`Platform`, `ScreenState`, `LlmTier`, `TestMigrationStatus`, `VerificationStatus`, `MigrationStage`, `TestOutcome`, `ComplexityMarkerType`, `PlatformScope`, `IosLocatorStrategy`, `HealingOutcome`, `SavingsSource`).
+  - Неизменяемые модели (`TokenUsage`, `ModelPricing`, `LlmCallRecord`, `TelemetrySnapshot`, `CleaningResult`, `ScreenStateKey`, `StateSnapshot`, `ScreenElementMapping`, `ScreenCacheEntry`, `MethodRef`/`FieldRef`/`TestMethodRef`, sealed `CodeChange`, `MigrationTaskDelta`, `TestMethodTask`, `LlmRequest`/`LlmResponse` с sealed `LlmMessage`, `TestRunResult`, `CompilationResult`, `TestMethodReport`, `ClassMigrationReport`, `EngineConfig`, `CommitId`).
+  - Sealed `MigrationException` и 6 подтипов (`domain.exception`).
+  - Интерфейсы портов в `domain.port`: `LlmClientPort`, `McpClientPort`, `McpClientsPort`, `CacheRepositoryPort`, `SnapshotRepositoryPort`, `CodeAnalyzerPort`, `CodeModifierPort`, `TestRunnerPort`, `GitServicePort`, `ReportGeneratorPort`, `MigrationLoggerPort`.
+  - Структурный логгер `LogbackMigrationLogger` (`migration_reports/<Class>/execution.log`): reasoning пишется в файл всегда, блоки `[🧠 LLM REASONING]` выводятся в консоль только при `showReasoning`; флаг `LlmRequest.reasoningRequested` выбирает `-reasoning`-модель.
 
 - [ ] **Фаза 2: Фундамент Фреймворка (`XmlPageSourceCleaner`, `BasePage`, `BaseTest`, `JavaParserAstAdapter`)**
   - Полная реализация `XmlPageSourceCleaner` (сжатие в 15–20 раз, белый список атрибутов, метка `offscreen="true"`, семантические зоны `TOP_APP_BAR`/`BOTTOM_NAV_BAR`/`BOTTOM_SHEET`/`scrollable_container`, схлопывание пустых оберток, маскирование секретов) + Unit-тесты.
+  - Корневой `./mvnw verify` без девайса — зелёный: Appium-тесты `migrator` по умолчанию выключены (`skipTests=true` в `migrator/pom.xml` или профиль `e2e`), включаются явно (`-Pe2e` / `-DskipTests=false`); тот же флаг использует будущий `MavenTestNgRunnerAdapter`.
   - Кроссплатформенный `BaseTest` (Mobitru драйверы, быстрый рестарт `terminateApp`/`activateApp`) и `BasePage` (нативные скроллы, `waitForLoadingToDisappear`, `navigateBack`, `safeHideKeyboard`, `dismissBottomSheetBySwipe`, `openSystemNotifications`, `getCleanText`).
   - Реализация `JavaParserAstAdapter` для чтения и безопасной модификации AST тестовых классов и Page Object'ов.
 
 - [ ] **Фаза 3: Кеш Состояний и `DialTieredLlmRouter` (LangChain4j + EPAM AI DIAL) + Телеметрия**
-  - Реализация `JsonCacheRepository` (работа с `.migration/migration_cache.json` и папкой состояний `.migration/snapshots/<ScreenName>/state_<state>_clean.xml`).
+  - Реализация `JsonCacheRepository` (шардированный реестр `.migration/` с индексом `migration_cache.json`, атомарная запись) и `FileSnapshotRepository` (`.migration/snapshots/<ScreenName>/state_<STATE>[_<variant>]_<platform>_clean.xml` + PNG).
   - Реализация `DialTieredLlmRouter` на базе `OpenAiChatModel` (LangChain4j) для работы с `https://ai-proxy.lab.epam.com/openai/deployments/{modelId}`, заголовком `api-key`, поддержкой мультимодальности (`ImageContent` для скриншотов) и переключением на `-reasoning` / `-with-thinking` модели при `showReasoning=true`.
   - Реализация `TelemetryCollector` (автоматический сбор токенов из ответов LangChain4j, расчет стоимости в `$`, подсчет сэкономленных токенов от очистки XML и кеша, замер времени каждого этапа).
 
