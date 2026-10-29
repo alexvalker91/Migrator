@@ -38,6 +38,7 @@ public final class ScriptedLlm implements LlmClientPort {
 
     private final List<Function<LlmRequest<?>, Object>> script = new ArrayList<>();
     private final List<LlmRequest<?>> requests = new ArrayList<>();
+    private Function<LlmRequest<?>, Object> fallback;
 
     public ScriptedLlm then(Function<LlmRequest<?>, Object> reply) {
         script.add(reply);
@@ -46,6 +47,12 @@ public final class ScriptedLlm implements LlmClientPort {
 
     public ScriptedLlm thenReturn(Object reply) {
         script.add(request -> reply);
+        return this;
+    }
+
+    /** Answers every call that is not covered by the script, deciding from the request (e.g. its purpose). */
+    public ScriptedLlm otherwise(Function<LlmRequest<?>, Object> reply) {
+        fallback = reply;
         return this;
     }
 
@@ -64,10 +71,14 @@ public final class ScriptedLlm implements LlmClientPort {
     @Override
     @SuppressWarnings("unchecked")
     public <T> LlmResponse<T> chat(LlmRequest<T> request) {
-        if (requests.size() >= script.size()) {
+        Object reply;
+        if (requests.size() < script.size()) {
+            reply = script.get(requests.size()).apply(request);
+        } else if (fallback != null) {
+            reply = fallback.apply(request);
+        } else {
             throw new AssertionError("unscripted LLM call #" + (requests.size() + 1) + ": " + request.purpose());
         }
-        Object reply = script.get(requests.size()).apply(request);
         requests.add(request);
         if (reply instanceof ToolCalls toolCalls) {
             return new LlmResponse<>(Optional.empty(), Optional.empty(), toolCalls.calls(), usage(toolCalls.tokens()),

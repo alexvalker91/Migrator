@@ -58,7 +58,6 @@ public final class AgentLoop {
                     List.copyOf(messages), tools, String.class, task.reasoning());
             LlmResponse<String> response = llm.chat(request);
             tokens += response.usage().total();
-            response.reasoning().ifPresent(text -> logger.reasoning(task.tier(), task.purpose(), text));
             if (!response.hasToolCalls()) {
                 return new AgentRunResult(AgentRunOutcome.COMPLETED, steps, tokens,
                         response.content().orElse(""), trace);

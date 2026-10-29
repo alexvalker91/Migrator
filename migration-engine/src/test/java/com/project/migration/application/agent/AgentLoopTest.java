@@ -183,15 +183,6 @@ class AgentLoopTest {
     }
 
     @Test
-    void sendsModelReasoningToTheSessionLog() {
-        llm.thenReturn(new ScriptedLlm.Reply("done", 100, "I should tap login"));
-
-        loop(AgentLoopConfig.DEFAULT).run(task(), toolbox(AgentLoopConfig.DEFAULT));
-
-        assertThat(logger.reasoning).singleElement().asString().contains("I should tap login");
-    }
-
-    @Test
     void registeringTheSameSyntheticToolTwiceIsRejected() {
         SyntheticTool tool = new SyntheticTool(new ToolSpec("mark", "x", "{}"), args -> ToolOutcome.text("ok"));
         AgentToolbox toolbox = toolbox(AgentLoopConfig.DEFAULT).with(tool);
