@@ -1,6 +1,8 @@
 package com.project.migration.domain.model.report;
 
 import com.project.migration.domain.model.Checks;
+import com.project.migration.domain.model.code.TestMethodRef;
+import com.project.migration.domain.model.orchestration.MigrationExitStatus;
 import com.project.migration.domain.model.MigrationStage;
 import com.project.migration.domain.model.run.TestClassRunResult;
 import com.project.migration.domain.model.telemetry.TelemetrySnapshot;
@@ -13,6 +15,10 @@ import java.util.Optional;
 
 /**
  * Everything the report generator needs for {@code dashboard.html} and {@code report.md} of one class.
+ *
+ * @param exitStatus         how the migration ended
+ * @param androidRegressions methods that failed on Android in the guard run and again when run alone (the
+ *                           {@code androidRegressionRun} may also hold flakes that passed on the second try)
  */
 public record ClassMigrationReport(
         String testClassFqcn,
@@ -24,7 +30,9 @@ public record ClassMigrationReport(
         TelemetrySnapshot telemetry,
         Optional<TestClassRunResult> iosClassRun,
         Optional<TestClassRunResult> androidRegressionRun,
-        ProjectProgress progress) {
+        ProjectProgress progress,
+        MigrationExitStatus exitStatus,
+        List<TestMethodRef> androidRegressions) {
 
     public ClassMigrationReport {
         Checks.notBlank(testClassFqcn, "testClassFqcn");
@@ -40,6 +48,8 @@ public record ClassMigrationReport(
         iosClassRun = iosClassRun == null ? Optional.empty() : iosClassRun;
         androidRegressionRun = androidRegressionRun == null ? Optional.empty() : androidRegressionRun;
         Checks.notNull(progress, "progress");
+        Checks.notNull(exitStatus, "exitStatus");
+        androidRegressions = List.copyOf(Checks.notNull(androidRegressions, "androidRegressions"));
     }
 
     public Duration totalDuration() {

@@ -192,7 +192,7 @@ public final class TestClassMigrationOrchestrator {
 
                 boolean environmentDown = stabilize(delta, baseline, reports);
                 if (environmentDown) {
-                    return conclude(request, branch, started, allTests, reports, Optional.empty(), Optional.empty(),
+                    return conclude(request, branch, started, allTests, reports, Optional.empty(), Optional.empty(), List.of(),
                             MigrationExitStatus.ABORTED, "the environment looks down: "
                             + config.gate().maxConsecutiveEnvironmentFailures() + " tests in a row gave up on it; the rest is pending");
                 }
@@ -270,7 +270,7 @@ public final class TestClassMigrationOrchestrator {
             reports.put(task.test(), new TestMethodReport(task.test(), TestMigrationStatus.NEEDS_MANUAL_FIX, 0, 0, List.of(),
                     Optional.of(new FailureEvidence(errors, Optional.empty(), Optional.empty(), verdict)), List.of(), Map.of()));
         }
-        return conclude(request, branch, started, allTests, reports, Optional.empty(), Optional.empty(),
+        return conclude(request, branch, started, allTests, reports, Optional.empty(), Optional.empty(), List.of(),
                 MigrationExitStatus.ABORTED, verdict + "; " + touched.size() + " file(s) rolled back to "
                 + branchStart.abbreviated());
     }
@@ -306,19 +306,20 @@ public final class TestClassMigrationOrchestrator {
             status = MigrationExitStatus.SUCCESS;
             message = "all tests migrated";
         }
-        return conclude(request, branch, started, allTests, reports, iosRun, guard.map(RegressionResult::run), status, message);
+        return conclude(request, branch, started, allTests, reports, iosRun, guard.map(RegressionResult::run),
+                guard.map(RegressionResult::regressions).orElse(List.of()), status, message);
     }
 
     /** Builds the report, writes it, commits and pushes as far as the status and the request allow. */
     private ClassMigrationOutcome conclude(TestClassMigrationRequest request, String branch, Instant started,
                                            List<TestMethodRef> allTests, Map<TestMethodRef, TestMethodReport> reports,
                                            Optional<TestClassRunResult> iosRun, Optional<TestClassRunResult> androidRun,
-                                           MigrationExitStatus status, String message) {
+                                           List<TestMethodRef> androidRegressions, MigrationExitStatus status, String message) {
         telemetry.finish();
         TelemetrySnapshot snapshot = telemetry.snapshot();
         List<TestMethodReport> ordered = allTests.stream().map(reports::get).toList();
         ClassMigrationReport report = new ClassMigrationReport(request.testClassFqcn(), branch, started, clock.instant(),
-                ordered, snapshot.stageDurations(), snapshot, iosRun, androidRun, progress.calculate());
+                ordered, snapshot.stageDurations(), snapshot, iosRun, androidRun, progress.calculate(), status, androidRegressions);
         recordHistory(report, status);
         Optional<ReportArtifacts> artifacts = generate(report);
 
@@ -364,7 +365,7 @@ public final class TestClassMigrationOrchestrator {
         logger.error(message, null);
         telemetry.finish();
         ClassMigrationReport report = new ClassMigrationReport(fqcn, branch, started, clock.instant(), List.of(), Map.of(),
-                telemetry.snapshot(), Optional.empty(), Optional.empty(), progress.calculate());
+                telemetry.snapshot(), Optional.empty(), Optional.empty(), progress.calculate(), MigrationExitStatus.ABORTED, List.of());
         return new ClassMigrationOutcome(MigrationExitStatus.ABORTED, report, Optional.empty(), false, message);
     }
 
