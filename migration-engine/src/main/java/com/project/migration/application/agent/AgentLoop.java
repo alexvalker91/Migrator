@@ -45,7 +45,7 @@ public final class AgentLoop {
     public AgentRunResult run(AgentTask task, AgentToolbox toolbox) {
         List<LlmMessage> messages = new ArrayList<>();
         messages.add(new SystemMessage(task.systemPrompt()));
-        messages.add(UserMessage.of(task.userPrompt()));
+        messages.add(new UserMessage(task.userPrompt(), task.images()));
         List<ScreenMarker> screens = new ArrayList<>();
         List<ToolTrace> trace = new ArrayList<>();
         var tools = toolbox.specs();

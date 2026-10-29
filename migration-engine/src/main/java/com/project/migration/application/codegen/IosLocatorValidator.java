@@ -15,9 +15,9 @@ import java.util.regex.Pattern;
  * {@code **}{@code /Type} or {@code **}{@code /Type[`predicate`]}. Intermediate hierarchy levels and indexes are
  * not evaluable because the cleaner collapses layout wrappers, so such chains are rejected.
  */
-final class IosLocatorValidator {
+public final class IosLocatorValidator {
 
-    static final String ALLOWED_FORMS = "accessibility: the element's name; iOSNsPredicate: conditions on "
+    public static final String ALLOWED_FORMS = "accessibility: the element's name; iOSNsPredicate: conditions on "
             + "name, label, value, type, enabled joined with AND (operators ==, !=, CONTAINS, BEGINSWITH, ENDSWITH, "
             + "LIKE); iOSClassChain: only **/XCUIElementTypeX or **/XCUIElementTypeX[`predicate`] "
             + "(no indexes, no intermediate levels)";
@@ -32,15 +32,15 @@ final class IosLocatorValidator {
      * @param problem why the locator is not acceptable; empty when valid
      * @param first   first matching element when valid
      */
-    record Verdict(Optional<String> problem, Optional<IosElement> first, int matches) {
-        boolean isValid() {
+    public record Verdict(Optional<String> problem, Optional<IosElement> first, int matches) {
+        public boolean isValid() {
             return problem.isEmpty();
         }
     }
 
     /** Element of the cleaned iOS tree with the attributes the cleaner folded away restored. */
-    record IosElement(String type, String name, String label, String value, boolean enabled, boolean offscreen) {
-        static IosElement of(XmlElement element) {
+    public record IosElement(String type, String name, String label, String value, boolean enabled, boolean offscreen) {
+        public static IosElement of(XmlElement element) {
             String name = element.attribute("name");
             String label = element.attributes().containsKey("label") ? element.attribute("label") : name;
             String value = element.attributes().containsKey("value") ? element.attribute("value") : label;
@@ -49,7 +49,7 @@ final class IosLocatorValidator {
         }
 
         /** Text a scroll helper can search for. */
-        String visibleText() {
+        public String visibleText() {
             return !label.isBlank() ? label : !name.isBlank() ? name : value;
         }
     }
@@ -57,7 +57,7 @@ final class IosLocatorValidator {
     private IosLocatorValidator() {
     }
 
-    static Verdict validate(List<XmlElement> iosTree, IosLocatorStrategy strategy, String value, boolean collection) {
+    public static Verdict validate(List<XmlElement> iosTree, IosLocatorStrategy strategy, String value, boolean collection) {
         List<IosElement> elements = iosTree.stream().map(IosElement::of).toList();
         List<IosElement> matches;
         try {

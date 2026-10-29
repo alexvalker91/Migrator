@@ -21,19 +21,19 @@ import java.util.Map;
 /**
  * One element of a cleaned snapshot ({@code XmlPageSourceCleaner} output): short tag and the kept attributes.
  */
-record XmlElement(String tag, Map<String, String> attributes) {
+public record XmlElement(String tag, Map<String, String> attributes) {
 
-    XmlElement {
+    public XmlElement {
         Checks.notBlank(tag, "tag");
         attributes = Map.copyOf(attributes);
     }
 
-    String attribute(String name) {
+    public String attribute(String name) {
         return attributes.getOrDefault(name, "");
     }
 
     /** All elements of the document in document order, the root included. */
-    static List<XmlElement> parse(String cleanXml) {
+    public static List<XmlElement> parse(String cleanXml) {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
