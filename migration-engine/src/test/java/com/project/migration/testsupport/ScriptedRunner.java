@@ -50,7 +50,8 @@ public final class ScriptedRunner implements TestRunnerPort {
     public TestClassRunResult runTestClass(String testClassFqcn, Platform platform) {
         calls.add("class " + testClassFqcn + " " + platform);
         beforeEachRun.run();
-        return classRuns.isEmpty() ? new TestClassRunResult(testClassFqcn, platform, List.of(), Duration.ofSeconds(1))
+        return classRuns.isEmpty() ? new TestClassRunResult(testClassFqcn, platform,
+                List.of(passed(new TestMethodRef(testClassFqcn, "anyTest"), platform)), Duration.ofSeconds(1))
                 : classRuns.poll();
     }
 

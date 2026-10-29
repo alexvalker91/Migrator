@@ -86,7 +86,7 @@ class SelfHealingServiceTest {
     }
 
     private SelfHealingService serviceWith(CodeModifierPort modifierToUse) {
-        EngineConfig config = TelemetryFixture.config(project);
+        EngineConfig config = TelemetryFixture.config(project).withFramework(BankFixture.FRAMEWORK);
         TelemetryCollector telemetry = TelemetryFixture.collector(config, logger, CARDS_TEST);
         return new SelfHealingService(analyzer, modifierToUse, runner, git, cache, snapshots, mcps, llm, artifacts,
                 new XmlPageSourceCleaner(), telemetry, logger, config, Clock.fixed(Instant.parse("2026-10-30T10:00:00Z"), ZoneOffset.UTC));
