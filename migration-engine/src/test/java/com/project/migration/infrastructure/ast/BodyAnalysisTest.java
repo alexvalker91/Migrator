@@ -92,4 +92,15 @@ class BodyAnalysisTest {
         assertThat(adapter.detectComplexityMarkers(SCROLL_TO_CARD)).extracting(marker -> marker.type())
                 .contains(ComplexityMarkerType.UI_SCROLLABLE);
     }
+
+    @Test
+    void listsSetupMethodsOfTheTestClassAndItsBaseClassWithBaseClassFirst() {
+        assertThat(adapter.setupMethodSources(CARDS_TEST)).hasSize(2);
+        assertThat(adapter.setupMethodSources(CARDS_TEST).getFirst()).startsWith("// BaseTest").contains("restartApp");
+        assertThat(adapter.setupMethodSources(CARDS_TEST).getLast()).startsWith("// CardsTest")
+                .contains("loginAs(\"user@bank.com\"");
+        assertThat(adapter.setupMethodSources("com.bank.Missing")).isEmpty();
+        assertThat(adapter.testSource(new TestMethodRef(CARDS_TEST, "openCardDetails"))).hasValueSatisfying(
+                source -> assertThat(source).startsWith("@Test(description").contains("scrollToCard(last4)"));
+    }
 }

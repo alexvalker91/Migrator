@@ -28,6 +28,7 @@ public final class JavaParserAstAdapter implements CodeAnalyzerPort {
     private final CallTreeResolver callTrees;
     private final LocatorFieldFinder locators;
     private final ComplexityMarkerDetector markers;
+    private final SetupMethodFinder setups;
     private final BodyInspector bodies;
     private final JavaParserCodeModifier modifier;
 
@@ -44,6 +45,7 @@ public final class JavaParserAstAdapter implements CodeAnalyzerPort {
         this.callTrees = new CallTreeResolver(index, new CallTargetResolver(index), framework);
         this.locators = new LocatorFieldFinder(index);
         this.markers = new ComplexityMarkerDetector(index, framework);
+        this.setups = new SetupMethodFinder(index);
         this.bodies = new BodyInspector(index, markers, framework);
         this.modifier = new JavaParserCodeModifier(index);
     }
@@ -107,6 +109,11 @@ public final class JavaParserAstAdapter implements CodeAnalyzerPort {
         return index.type(method.classFqcn())
                 .flatMap(type -> SourceLookup.findMethod(type, method))
                 .flatMap(declaration -> declaration.getTokenRange().map(Object::toString));
+    }
+
+    @Override
+    public List<String> setupMethodSources(String testClassFqcn) {
+        return setups.sources(testClassFqcn);
     }
 
     @Override

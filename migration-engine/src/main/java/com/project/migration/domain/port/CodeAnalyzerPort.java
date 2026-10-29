@@ -52,6 +52,12 @@ public interface CodeAnalyzerPort {
 
     Optional<String> methodSource(MethodRef method);
 
+    /**
+     * Sources of the setup methods ({@code @BeforeMethod}, {@code @BeforeClass}, ...) a test class runs, base
+     * classes first. They show how the app is logged in before the test starts.
+     */
+    List<String> setupMethodSources(String testClassFqcn);
+
     /** Source of the {@code @Test} method as written, with its annotations. */
     Optional<String> testSource(TestMethodRef test);
 

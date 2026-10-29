@@ -11,7 +11,6 @@ import com.project.migration.domain.model.cache.StepCacheEntry;
 import com.project.migration.domain.model.cache.TestCacheEntry;
 import com.project.migration.domain.model.cache.VerificationStatus;
 import com.project.migration.domain.model.code.FieldRef;
-import com.project.migration.domain.model.code.FrameworkContract;
 import com.project.migration.domain.model.code.IosLocatorStrategy;
 import com.project.migration.domain.model.code.MethodRef;
 import com.project.migration.domain.model.code.TestMethodRef;
@@ -20,6 +19,7 @@ import com.project.migration.domain.model.screen.ScreenId;
 import com.project.migration.domain.model.screen.ScreenState;
 import com.project.migration.domain.model.screen.ScreenStateKey;
 import com.project.migration.infrastructure.ast.JavaParserAstAdapter;
+import com.project.migration.testsupport.BankFixture;
 import com.project.migration.testsupport.InMemoryCache;
 import com.project.migration.testsupport.InMemorySnapshots;
 import com.project.migration.testsupport.RecordingLogger;
@@ -29,15 +29,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -64,9 +58,8 @@ class DeltaAnalyzerServiceTest {
 
     @BeforeEach
     void setUp() {
-        copyFixture(project);
-        JavaParserAstAdapter analyzer = new JavaParserAstAdapter(project, List.of(), new FrameworkContract(
-                "com.bank.framework.BasePage", "com.bank.framework.BaseTest", Set.of("GooglePay", "GoogleWallet")));
+        BankFixture.copyTo(project);
+        JavaParserAstAdapter analyzer = BankFixture.analyzer(project);
         telemetry = TelemetryFixture.collector(TelemetryFixture.config(project), logger, CARDS_TEST);
         service = new DeltaAnalyzerService(analyzer, cache, snapshots, llm, telemetry, logger);
     }
@@ -211,25 +204,5 @@ class DeltaAnalyzerServiceTest {
 
     private static TestMethodTask task(MigrationTaskDelta delta, String method) {
         return delta.tasks().stream().filter(task -> task.test().methodName().equals(method)).findFirst().orElseThrow();
-    }
-
-    static void copyFixture(Path target) {
-        try {
-            Path source = Path.of(DeltaAnalyzerServiceTest.class.getResource("/fixtures/bank-project").toURI());
-            try (Stream<Path> files = Files.walk(source)) {
-                for (Path file : files.toList()) {
-                    Path destination = target.resolve(source.relativize(file).toString());
-                    if (Files.isDirectory(file)) {
-                        Files.createDirectories(destination);
-                    } else {
-                        Files.copy(file, destination);
-                    }
-                }
-            }
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        } catch (URISyntaxException e) {
-            throw new IllegalStateException(e);
-        }
     }
 }
