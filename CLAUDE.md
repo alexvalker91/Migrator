@@ -24,7 +24,7 @@
 2. **Принципы SOLID и Инструменты:**
    - **SRP (Single Responsibility):** Каждый класс решает ровно одну задачу. Не смешивай парсинг XML, HTTP-вызовы LLM, модификацию AST и работу с Git в одном классе.
    - **OCP & DIP (Open/Closed & Dependency Inversion):** Все внешние интеграции (LLM, MCP, Git, Maven, Cache) вызываются из слоя `application` исключительно через интерфейсы из `domain.port`.
-   - **AST вместо регулярок:** Для анализа и модификации Java-кода тестов и Page Object'ов используй строго библиотеку `com.github.javaparser:javaparser-core`. Модификация Java-кода регулярными выражениями запрещена.
+   - **AST вместо регулярок:** Для анализа и модификации Java-кода тестов и Page Object'ов используй строго JavaParser (`com.github.javaparser:javaparser-core` + `javaparser-symbol-solver-core` для резолва типов). Модификация — правками исходника в позициях узлов, найденных через AST (нетронутый код остаётся байт-в-байт); модификация Java-кода регулярными выражениями запрещена.
 
 ## 3. Контракт подключения к LLM (EPAM AI DIAL + LangChain4j)
 Все вызовы LLM внутри разрабатываемого Java-движка выполняются через библиотеку **LangChain4j (`OpenAiChatModel`)** к корпоративному шлюзу **EPAM AI DIAL**:

@@ -15,5 +15,10 @@ public enum ComplexityMarkerType {
     /** Platform-only features with no 1:1 counterpart (Google Wallet / Google Pay vs Apple Pay). */
     PLATFORM_SPECIFIC_FEATURE,
     /** Any other Android-only API ({@code AndroidDriver} casts, {@code startActivity}, adb shell...). */
-    ANDROID_ONLY_API
+    ANDROID_ONLY_API,
+    /**
+     * Locator built in the method body ({@code driver.findElement(By.id(...))}, {@code AppiumBy...}) instead of
+     * an annotated field: cannot get an {@code @iOSXCUITFindBy}, the method body is adapted as a whole.
+     */
+    INLINE_LOCATOR
 }

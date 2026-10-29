@@ -32,6 +32,11 @@
             <artifactId>javaparser-core</artifactId>
         </dependency>
         <dependency>
+            <!-- type resolution of fluent Page Object chains in JavaParserAstAdapter -->
+            <groupId>com.github.javaparser</groupId>
+            <artifactId>javaparser-symbol-solver-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>

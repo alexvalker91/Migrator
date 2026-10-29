@@ -7,8 +7,8 @@ import com.project.migration.domain.model.code.ModificationResult;
 import java.util.List;
 
 /**
- * AST-based modification of the target project, preserving formatting of untouched code (lexical preserving
- * printer in the adapter).
+ * AST-based modification of the target project: the adapter locates nodes with the AST and edits the source
+ * at their positions, so untouched code keeps its exact formatting.
  */
 public interface CodeModifierPort {
 
