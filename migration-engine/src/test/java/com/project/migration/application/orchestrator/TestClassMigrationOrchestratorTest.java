@@ -295,6 +295,57 @@ class TestClassMigrationOrchestratorTest {
     }
 
     @Test
+    void everyFinishedClassIsAppendedToTheHistoryExceptARefusedStart() {
+        List<com.project.migration.domain.model.history.ClassRunSummary> history = new ArrayList<>();
+        var recording = new com.project.migration.domain.port.RunHistoryPort() {
+            @Override
+            public void append(com.project.migration.domain.model.history.ClassRunSummary summary) {
+                history.add(summary);
+            }
+
+            @Override
+            public List<com.project.migration.domain.model.history.ClassRunSummary> findAll() {
+                return history;
+            }
+        };
+        gateAnswer = request -> request.task().test().equals(LOGIN) ? needsFix(request) : passed(request, TestMigrationStatus.STABLE_PASS);
+
+        orchestrator(recording).migrate(TestClassMigrationRequest.of(CARDS_TEST));
+
+        assertThat(history).singleElement().satisfies(run -> {
+            assertThat(run.testClassFqcn()).isEqualTo(CARDS_TEST);
+            assertThat(run.status()).isEqualTo(MigrationExitStatus.COMPLETED_WITH_MANUAL_FIX);
+            assertThat(run.processedTests()).isEqualTo(2);
+            assertThat(run.stableTests()).isEqualTo(1);
+            assertThat(run.manualFixTests()).isEqualTo(1);
+        });
+
+        git.extraUncommitted.add(Path.of("x.java"));
+        orchestrator(recording).migrate(TestClassMigrationRequest.of(CARDS_TEST));
+        assertThat(history).hasSize(1);
+    }
+
+    @Test
+    void aFailingHistoryDoesNotFailTheMigration() {
+        var broken = new com.project.migration.domain.port.RunHistoryPort() {
+            @Override
+            public void append(com.project.migration.domain.model.history.ClassRunSummary summary) {
+                throw new IllegalStateException("disk full");
+            }
+
+            @Override
+            public List<com.project.migration.domain.model.history.ClassRunSummary> findAll() {
+                return List.of();
+            }
+        };
+
+        ClassMigrationOutcome outcome = orchestrator(broken).migrate(TestClassMigrationRequest.of(CARDS_TEST));
+
+        assertThat(outcome.status()).isEqualTo(MigrationExitStatus.SUCCESS);
+        assertThat(logger.contains("could not be added to the history: disk full")).isTrue();
+    }
+
+    @Test
     void aClassWhoseTestsAreAllVerifiedOnlyRunsTheFinalChecks() {
         delta = MigrationTaskDelta.empty(CARDS_TEST);
         cache.saveTest(new com.project.migration.domain.model.cache.TestCacheEntry(OPEN, TestMigrationStatus.STABLE_PASS, NOW));
@@ -335,6 +386,13 @@ class TestClassMigrationOrchestratorTest {
         return new TestClassMigrationOrchestrator(deltaAnalyzer, collector, components, adapter, repairer, stabilizer, guard,
                 runner, git, generator, analyzer, cache, telemetry, logger, new ProjectProgressCalculator(analyzer, cache),
                 config, clock);
+    }
+
+    private TestClassMigrationOrchestrator orchestrator(com.project.migration.domain.port.RunHistoryPort history) {
+        telemetry = TelemetryFixture.collector(config, logger, CARDS_TEST);
+        return new TestClassMigrationOrchestrator(deltaAnalyzer, collector, components, adapter, repairer, stabilizer, guard,
+                runner, git, generator, analyzer, cache, telemetry, logger, new ProjectProgressCalculator(analyzer, cache),
+                config, clock, history);
     }
 
     private GateOutcome passed(GateRequest request, TestMigrationStatus status) {

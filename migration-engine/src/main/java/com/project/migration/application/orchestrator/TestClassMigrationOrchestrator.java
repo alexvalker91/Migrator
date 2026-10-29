@@ -3,6 +3,7 @@ package com.project.migration.application.orchestrator;
 import com.project.migration.application.codegen.CodeAdapter;
 import com.project.migration.application.delta.DeltaAnalyzer;
 import com.project.migration.application.healing.CompilationRepairer;
+import com.project.migration.application.report.RunSummaryFactory;
 import com.project.migration.application.snapshot.SnapshotCollector;
 import com.project.migration.application.stability.GateFailureKind;
 import com.project.migration.application.stability.GateOutcome;
@@ -19,6 +20,7 @@ import com.project.migration.domain.model.cache.TestCacheEntry;
 import com.project.migration.domain.model.code.CodeNames;
 import com.project.migration.domain.model.code.TestMethodRef;
 import com.project.migration.domain.model.config.EngineConfig;
+import com.project.migration.domain.model.history.ClassRunSummary;
 import com.project.migration.domain.model.orchestration.ClassMigrationOutcome;
 import com.project.migration.domain.model.orchestration.MigrationExitStatus;
 import com.project.migration.domain.model.orchestration.TestClassMigrationRequest;
@@ -39,6 +41,7 @@ import com.project.migration.domain.port.CodeAnalyzerPort;
 import com.project.migration.domain.port.GitServicePort;
 import com.project.migration.domain.port.MigrationLoggerPort;
 import com.project.migration.domain.port.ReportGeneratorPort;
+import com.project.migration.domain.port.RunHistoryPort;
 import com.project.migration.domain.port.TestRunnerPort;
 
 import java.nio.file.Path;
@@ -62,6 +65,16 @@ import java.util.stream.Collectors;
  */
 public final class TestClassMigrationOrchestrator {
 
+    private static final RunHistoryPort NO_HISTORY = new RunHistoryPort() {
+        @Override
+        public void append(ClassRunSummary summary) {
+        }
+
+        @Override
+        public List<ClassRunSummary> findAll() {
+            return List.of();
+        }
+    };
     private static final int COMPILE_REPAIR_ROUNDS = 2;
     private static final Set<TestMigrationStatus> PASSING_ON_IOS = EnumSet.of(TestMigrationStatus.STABLE_PASS,
             TestMigrationStatus.HEALED_AND_PASSED, TestMigrationStatus.SKIPPED_ALREADY_VERIFIED);
@@ -83,6 +96,7 @@ public final class TestClassMigrationOrchestrator {
     private final ProjectProgressCalculator progress;
     private final EngineConfig config;
     private final Clock clock;
+    private final RunHistoryPort history;
 
     public TestClassMigrationOrchestrator(DeltaAnalyzer deltaAnalyzer, SnapshotCollector snapshotCollector,
                                           ComponentInitializer componentInitializer, CodeAdapter codeAdapter,
@@ -92,6 +106,20 @@ public final class TestClassMigrationOrchestrator {
                                           CacheRepositoryPort cache, TelemetryCollector telemetry,
                                           MigrationLoggerPort logger, ProjectProgressCalculator progress,
                                           EngineConfig config, Clock clock) {
+        this(deltaAnalyzer, snapshotCollector, componentInitializer, codeAdapter, compilationRepairer, stabilizer,
+                regressionGuard, runner, git, reportGenerator, analyzer, cache, telemetry, logger, progress, config, clock,
+                NO_HISTORY);
+    }
+
+    public TestClassMigrationOrchestrator(DeltaAnalyzer deltaAnalyzer, SnapshotCollector snapshotCollector,
+                                          ComponentInitializer componentInitializer, CodeAdapter codeAdapter,
+                                          CompilationRepairer compilationRepairer, TestStabilizer stabilizer,
+                                          RegressionGuard regressionGuard, TestRunnerPort runner, GitServicePort git,
+                                          ReportGeneratorPort reportGenerator, CodeAnalyzerPort analyzer,
+                                          CacheRepositoryPort cache, TelemetryCollector telemetry,
+                                          MigrationLoggerPort logger, ProjectProgressCalculator progress,
+                                          EngineConfig config, Clock clock, RunHistoryPort history) {
+        this.history = Checks.notNull(history, "history");
         this.deltaAnalyzer = Checks.notNull(deltaAnalyzer, "deltaAnalyzer");
         this.snapshotCollector = Checks.notNull(snapshotCollector, "snapshotCollector");
         this.componentInitializer = Checks.notNull(componentInitializer, "componentInitializer");
@@ -291,6 +319,7 @@ public final class TestClassMigrationOrchestrator {
         List<TestMethodReport> ordered = allTests.stream().map(reports::get).toList();
         ClassMigrationReport report = new ClassMigrationReport(request.testClassFqcn(), branch, started, clock.instant(),
                 ordered, snapshot.stageDurations(), snapshot, iosRun, androidRun, progress.calculate());
+        recordHistory(report, status);
         Optional<ReportArtifacts> artifacts = generate(report);
 
         boolean pushed = false;
@@ -309,6 +338,14 @@ public final class TestClassMigrationOrchestrator {
         }
         logger.info("Migration of " + request.testClassFqcn() + " ended " + status + ": " + message);
         return new ClassMigrationOutcome(status, report, artifacts, pushed, message);
+    }
+
+    private void recordHistory(ClassMigrationReport report, MigrationExitStatus status) {
+        try {
+            history.append(RunSummaryFactory.of(report, status));
+        } catch (RuntimeException e) {
+            logger.warn("The run could not be added to the history: " + e.getMessage());
+        }
     }
 
     private Optional<ReportArtifacts> generate(ClassMigrationReport report) {

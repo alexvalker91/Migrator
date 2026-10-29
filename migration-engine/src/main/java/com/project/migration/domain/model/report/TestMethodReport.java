@@ -54,6 +54,10 @@ public record TestMethodReport(
         }
     }
 
+    public int healingAttemptCount() {
+        return healingAttempts.size();
+    }
+
     public Duration totalDuration() {
         return stageTimings.values().stream().reduce(Duration.ZERO, Duration::plus);
     }
