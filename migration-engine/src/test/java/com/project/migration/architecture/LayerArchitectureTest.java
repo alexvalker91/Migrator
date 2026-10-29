@@ -25,7 +25,9 @@ class LayerArchitectureTest {
     static final ArchRule applicationDependsOnlyOnDomainAndJdk = classes()
             .that().resideInAPackage("com.project.migration.application..")
             .should().onlyDependOnClassesThat()
-            .resideInAnyPackage("java..", "com.project.migration.domain..", "com.project.migration.application..")
+            // javax.xml / org.w3c.dom / org.xml.sax: the JDK's own java.xml module (XmlPageSourceCleaner)
+            .resideInAnyPackage("java..", "javax.xml..", "org.w3c.dom..", "org.xml.sax..",
+                    "com.project.migration.domain..", "com.project.migration.application..")
             .because("external integrations are reached through domain ports only")
             .allowEmptyShould(true);
 

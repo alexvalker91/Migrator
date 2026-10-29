@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AppiumAUT>
+<XCUIElementTypeApplication type="XCUIElementTypeApplication" name="Bank" label="Bank" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="0">
+  <XCUIElementTypeWindow type="XCUIElementTypeWindow" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+    <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+        <XCUIElementTypeNavigationBar type="XCUIElementTypeNavigationBar" name="History" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="0">
+          <XCUIElementTypeButton type="XCUIElementTypeButton" name="Back" label="Back" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+          <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="History" label="History" value="History" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+        </XCUIElementTypeNavigationBar>
+        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="1">
+          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="card_title" label="Visa Gold 4111 1111 1111 1111" value="Visa Gold 4111 1111 1111 1111" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="balance" label="1 234,56 BYN" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+          </XCUIElementTypeOther>
+        </XCUIElementTypeOther>
+        <XCUIElementTypeSecureTextField type="XCUIElementTypeSecureTextField" name="pin_input" value="1234" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+        <XCUIElementTypeTable type="XCUIElementTypeTable" name="operations_list" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="3">
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="200" width="390" height="72" index="0">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Fuel Station" label="Fuel Station" value="Fuel Station" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-206,80 BYN" label="-206,80 BYN" value="-206,80 BYN" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="272" width="390" height="72" index="1">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Book Store" label="Book Store" value="Book Store" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-71,65 BYN" label="-71,65 BYN" value="-71,65 BYN" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="344" width="390" height="72" index="2">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Book Store" label="Book Store" value="Book Store" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-213,55 BYN" label="-213,55 BYN" value="-213,55 BYN" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="416" width="390" height="72" index="3">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Cinema City" label="Cinema City" value="Cinema City" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-119,29 BYN" label="-119,29 BYN" value="-119,29 BYN" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="488" width="390" height="72" index="4">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Green Market" label="Green Market" value="Green Market" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-91,29 BYN" label="-91,29 BYN" value="-91,29 BYN" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="560" width="390" height="72" index="5">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Taxi Go" label="Taxi Go" value="Taxi Go" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-120,11 BYN" label="-120,11 BYN" value="-120,11 BYN" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="632" width="390" height="72" index="6">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Fuel Station" label="Fuel Station" value="Fuel Station" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-94,43 BYN" label="-94,43 BYN" value="-94,43 BYN" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="704" width="390" height="72" index="7">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Book Store" label="Book Store" value="Book Store" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-3,28 BYN" label="-3,28 BYN" value="-3,28 BYN" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="776" width="390" height="72" index="8">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Cinema City" label="Cinema City" value="Cinema City" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-274,57 BYN" label="-274,57 BYN" value="-274,57 BYN" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="848" width="390" height="72" index="9">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Pharmacy 24" label="Pharmacy 24" value="Pharmacy 24" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-65,98 BYN" label="-65,98 BYN" value="-65,98 BYN" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="920" width="390" height="72" index="10">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Coffee Point" label="Coffee Point" value="Coffee Point" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-234,97 BYN" label="-234,97 BYN" value="-234,97 BYN" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="992" width="390" height="72" index="11">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Cinema City" label="Cinema City" value="Cinema City" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-204,61 BYN" label="-204,61 BYN" value="-204,61 BYN" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="1064" width="390" height="72" index="12">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Cinema City" label="Cinema City" value="Cinema City" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-54,71 BYN" label="-54,71 BYN" value="-54,71 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="1136" width="390" height="72" index="13">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Cinema City" label="Cinema City" value="Cinema City" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-32,34 BYN" label="-32,34 BYN" value="-32,34 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="1208" width="390" height="72" index="14">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Green Market" label="Green Market" value="Green Market" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-107,66 BYN" label="-107,66 BYN" value="-107,66 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="1280" width="390" height="72" index="15">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Metro" label="Metro" value="Metro" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-57,53 BYN" label="-57,53 BYN" value="-57,53 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="1352" width="390" height="72" index="16">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Coffee Point" label="Coffee Point" value="Coffee Point" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-53,10 BYN" label="-53,10 BYN" value="-53,10 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="1424" width="390" height="72" index="17">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Metro" label="Metro" value="Metro" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-275,22 BYN" label="-275,22 BYN" value="-275,22 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="1496" width="390" height="72" index="18">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Pharmacy 24" label="Pharmacy 24" value="Pharmacy 24" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-14,19 BYN" label="-14,19 BYN" value="-14,19 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="1568" width="390" height="72" index="19">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Taxi Go" label="Taxi Go" value="Taxi Go" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-193,29 BYN" label="-193,29 BYN" value="-193,29 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="1640" width="390" height="72" index="20">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Book Store" label="Book Store" value="Book Store" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-178,87 BYN" label="-178,87 BYN" value="-178,87 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="1712" width="390" height="72" index="21">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Pharmacy 24" label="Pharmacy 24" value="Pharmacy 24" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-243,25 BYN" label="-243,25 BYN" value="-243,25 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="1784" width="390" height="72" index="22">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Green Market" label="Green Market" value="Green Market" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-250,69 BYN" label="-250,69 BYN" value="-250,69 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="1856" width="390" height="72" index="23">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Fuel Station" label="Fuel Station" value="Fuel Station" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-248,49 BYN" label="-248,49 BYN" value="-248,49 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="1928" width="390" height="72" index="24">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Green Market" label="Green Market" value="Green Market" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-74,23 BYN" label="-74,23 BYN" value="-74,23 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="2000" width="390" height="72" index="25">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Pharmacy 24" label="Pharmacy 24" value="Pharmacy 24" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-136,71 BYN" label="-136,71 BYN" value="-136,71 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="2072" width="390" height="72" index="26">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Metro" label="Metro" value="Metro" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-265,12 BYN" label="-265,12 BYN" value="-265,12 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="2144" width="390" height="72" index="27">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Taxi Go" label="Taxi Go" value="Taxi Go" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-271,56 BYN" label="-271,56 BYN" value="-271,56 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="2216" width="390" height="72" index="28">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Metro" label="Metro" value="Metro" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-279,13 BYN" label="-279,13 BYN" value="-279,13 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="2288" width="390" height="72" index="29">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Book Store" label="Book Store" value="Book Store" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-47,99 BYN" label="-47,99 BYN" value="-47,99 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="2360" width="390" height="72" index="30">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Book Store" label="Book Store" value="Book Store" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-266,56 BYN" label="-266,56 BYN" value="-266,56 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="2432" width="390" height="72" index="31">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Metro" label="Metro" value="Metro" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-183,38 BYN" label="-183,38 BYN" value="-183,38 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="2504" width="390" height="72" index="32">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Pharmacy 24" label="Pharmacy 24" value="Pharmacy 24" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-115,88 BYN" label="-115,88 BYN" value="-115,88 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="2576" width="390" height="72" index="33">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Taxi Go" label="Taxi Go" value="Taxi Go" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-123,61 BYN" label="-123,61 BYN" value="-123,61 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="2648" width="390" height="72" index="34">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Taxi Go" label="Taxi Go" value="Taxi Go" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-103,76 BYN" label="-103,76 BYN" value="-103,76 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="2720" width="390" height="72" index="35">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Fuel Station" label="Fuel Station" value="Fuel Station" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-183,13 BYN" label="-183,13 BYN" value="-183,13 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="2792" width="390" height="72" index="36">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Coffee Point" label="Coffee Point" value="Coffee Point" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-144,70 BYN" label="-144,70 BYN" value="-144,70 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="2864" width="390" height="72" index="37">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Book Store" label="Book Store" value="Book Store" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-100,98 BYN" label="-100,98 BYN" value="-100,98 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="2936" width="390" height="72" index="38">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Pharmacy 24" label="Pharmacy 24" value="Pharmacy 24" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-229,54 BYN" label="-229,54 BYN" value="-229,54 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+            <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="false" accessible="false" x="0" y="3008" width="390" height="72" index="39">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+                  <XCUIElementTypeImage type="XCUIElementTypeImage" name="merchant_icon" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="Pharmacy 24" label="Pharmacy 24" value="Pharmacy 24" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="27 Oct 2026" label="27 Oct 2026" value="27 Oct 2026" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" name="-42,38 BYN" label="-42,38 BYN" value="-42,38 BYN" enabled="true" visible="false" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeCell>
+        </XCUIElementTypeTable>
+        <XCUIElementTypeTabBar type="XCUIElementTypeTabBar" name="Tab Bar" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="4">
+          <XCUIElementTypeButton type="XCUIElementTypeButton" name="Home" label="Home" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="0"/>
+          <XCUIElementTypeButton type="XCUIElementTypeButton" name="Cards" label="Cards" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="1"/>
+          <XCUIElementTypeButton type="XCUIElementTypeButton" name="Payments" label="Payments" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="2"/>
+          <XCUIElementTypeButton type="XCUIElementTypeButton" name="History" label="History" value="1" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="3"/>
+          <XCUIElementTypeButton type="XCUIElementTypeButton" name="More" label="More" enabled="true" visible="true" accessible="true" x="0" y="0" width="390" height="72" index="4"/>
+        </XCUIElementTypeTabBar>
+      </XCUIElementTypeOther>
+    </XCUIElementTypeOther>
+  </XCUIElementTypeWindow>
+  <XCUIElementTypeWindow type="XCUIElementTypeWindow" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="1">
+    <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0">
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="390" height="72" index="0"/>
+    </XCUIElementTypeOther>
+  </XCUIElementTypeWindow>
+</XCUIElementTypeApplication>
+</AppiumAUT>
