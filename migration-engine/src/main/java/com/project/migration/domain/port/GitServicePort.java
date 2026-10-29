@@ -20,6 +20,9 @@ public interface GitServicePort {
 
     CommitId head();
 
+    /** Files with uncommitted changes (modified, staged or untracked), ignoring what {@code .gitignore} excludes. */
+    Set<Path> uncommittedChanges();
+
     /**
      * Stages all changes (respecting {@code .gitignore}) and commits.
      *

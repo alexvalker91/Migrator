@@ -9,10 +9,13 @@ import com.project.migration.domain.model.Platform;
 import com.project.migration.domain.model.code.FrameworkContract;
 import com.project.migration.domain.model.config.AgentLoopConfig;
 import com.project.migration.domain.model.config.EngineConfig;
+import com.project.migration.domain.model.config.GateConfig;
+import com.project.migration.domain.model.config.MavenConfig;
 import com.project.migration.domain.model.config.McpServerConfig;
 import com.project.migration.domain.model.llm.LlmTier;
 import com.project.migration.domain.model.llm.TierModelConfig;
 import com.project.migration.domain.model.mcp.McpToolCall;
+import com.project.migration.domain.model.screen.ComponentId;
 import com.project.migration.domain.model.telemetry.ModelPricing;
 import com.project.migration.infrastructure.json.JsonMappers;
 
@@ -45,7 +48,15 @@ public final class JsonEngineConfigLoader {
 
     record ConfigJson(int schemaVersion, int stabilityRuns, int maxHealingAttempts, Map<LlmTier, TierJson> tiers,
                       Map<String, PricingJson> modelPricing, Map<Platform, McpServerJson> mcpServers,
-                      AgentLoopJson agentLoop) {
+                      AgentLoopJson agentLoop, MavenJson maven, GateJson gate, Map<String, String> globalComponents) {
+    }
+
+    record MavenJson(String executable, List<String> extraArgs, String testModule, long compileTimeoutSeconds,
+                     long testTimeoutSeconds, long classTimeoutSeconds) {
+    }
+
+    record GateJson(long maxTestMinutes, long maxTestTokens, int environmentRetries,
+                    int maxConsecutiveEnvironmentFailures) {
     }
 
     record McpServerJson(String command, List<String> args, Map<String, String> env,
@@ -118,7 +129,8 @@ public final class JsonEngineConfigLoader {
         Path root = projectRoot.toAbsolutePath().normalize();
         return new EngineConfig(root, root.resolve(".migration"), root.resolve("migration_reports"), showReasoning,
                 config.stabilityRuns(), config.maxHealingAttempts(), tiers, List.copyOf(pricing.values()),
-                List.of(), FrameworkContract.DEFAULT, toMcpServers(config.mcpServers()), toAgentLoop(config.agentLoop()));
+                List.of(), FrameworkContract.DEFAULT, toMcpServers(config.mcpServers()), toAgentLoop(config.agentLoop()),
+                toMaven(config.maven()), toGate(config.gate()), toComponents(config.globalComponents()));
     }
 
     private static Map<Platform, McpServerConfig> toMcpServers(Map<Platform, McpServerJson> servers) {
@@ -138,6 +150,28 @@ public final class JsonEngineConfigLoader {
         }
         return calls.stream().map(call -> new McpToolCall(call.tool(),
                 call.arguments() == null ? "{}" : call.arguments().toString())).toList();
+    }
+
+    private static MavenConfig toMaven(MavenJson maven) {
+        if (maven == null) {
+            return MavenConfig.DEFAULT;
+        }
+        return new MavenConfig(Optional.ofNullable(maven.executable()), orEmpty(maven.extraArgs()),
+                Optional.ofNullable(maven.testModule()), Duration.ofSeconds(maven.compileTimeoutSeconds()),
+                Duration.ofSeconds(maven.testTimeoutSeconds()), Duration.ofSeconds(maven.classTimeoutSeconds()));
+    }
+
+    private static GateConfig toGate(GateJson gate) {
+        return gate == null ? GateConfig.DEFAULT : new GateConfig(Duration.ofMinutes(gate.maxTestMinutes()),
+                gate.maxTestTokens(), gate.environmentRetries(), gate.maxConsecutiveEnvironmentFailures());
+    }
+
+    private static Map<ComponentId, String> toComponents(Map<String, String> components) {
+        Map<ComponentId, String> result = new LinkedHashMap<>();
+        if (components != null) {
+            components.forEach((id, fqcn) -> result.put(new ComponentId(id), fqcn));
+        }
+        return result;
     }
 
     private static AgentLoopConfig toAgentLoop(AgentLoopJson loop) {

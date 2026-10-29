@@ -28,6 +28,7 @@ public final class JavaParserAstAdapter implements CodeAnalyzerPort {
     private final CallTreeResolver callTrees;
     private final LocatorFieldFinder locators;
     private final ComplexityMarkerDetector markers;
+    private final ScreenClassFinder screens;
     private final SetupMethodFinder setups;
     private final BodyInspector bodies;
     private final JavaParserCodeModifier modifier;
@@ -45,6 +46,7 @@ public final class JavaParserAstAdapter implements CodeAnalyzerPort {
         this.callTrees = new CallTreeResolver(index, new CallTargetResolver(index), framework);
         this.locators = new LocatorFieldFinder(index);
         this.markers = new ComplexityMarkerDetector(index, framework);
+        this.screens = new ScreenClassFinder(index, framework);
         this.setups = new SetupMethodFinder(index);
         this.bodies = new BodyInspector(index, markers, framework);
         this.modifier = new JavaParserCodeModifier(index);
@@ -53,6 +55,11 @@ public final class JavaParserAstAdapter implements CodeAnalyzerPort {
     /** The {@link CodeModifierPort} working on the same sources. */
     public CodeModifierPort modifier() {
         return modifier;
+    }
+
+    @Override
+    public List<String> listScreenClasses() {
+        return screens.classes();
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.project.migration.domain.model.Platform;
 import com.project.migration.domain.model.code.FrameworkContract;
 import com.project.migration.domain.model.llm.LlmTier;
 import com.project.migration.domain.model.llm.TierModelConfig;
+import com.project.migration.domain.model.screen.ComponentId;
 import com.project.migration.domain.model.telemetry.ModelPricing;
 
 import java.nio.file.Path;
@@ -26,6 +27,9 @@ import java.util.Set;
  * @param framework    base classes and helper contract of the target project
  * @param mcpServers   Appium MCP server per platform; a platform without an entry cannot open a session
  * @param agentLoop    limits and tool whitelist of LLM tool-calling runs
+ * @param maven        how the target project's Maven build is run
+ * @param gate         per-test budgets of the stabilization stage
+ * @param globalComponents cross-screen components (Stage 0): id → Page Object class; empty = none
  */
 public record EngineConfig(
         Path projectRoot,
@@ -39,7 +43,10 @@ public record EngineConfig(
         List<Path> sourceRoots,
         FrameworkContract framework,
         Map<Platform, McpServerConfig> mcpServers,
-        AgentLoopConfig agentLoop) {
+        AgentLoopConfig agentLoop,
+        MavenConfig maven,
+        GateConfig gate,
+        Map<ComponentId, String> globalComponents) {
 
     public static final int DEFAULT_STABILITY_RUNS = 3;
     public static final int DEFAULT_MAX_HEALING_ATTEMPTS = 3;
@@ -73,6 +80,9 @@ public record EngineConfig(
         Checks.notNull(framework, "framework");
         mcpServers = Map.copyOf(Checks.notNull(mcpServers, "mcpServers"));
         Checks.notNull(agentLoop, "agentLoop");
+        Checks.notNull(maven, "maven");
+        Checks.notNull(gate, "gate");
+        globalComponents = Map.copyOf(Checks.notNull(globalComponents, "globalComponents"));
     }
 
     /**
@@ -83,27 +93,46 @@ public record EngineConfig(
             Path projectRoot, boolean showReasoning, List<TierModelConfig> tierModels, List<ModelPricing> pricing) {
         return new EngineConfig(projectRoot, projectRoot.resolve(".migration"), projectRoot.resolve("migration_reports"),
                 showReasoning, DEFAULT_STABILITY_RUNS, DEFAULT_MAX_HEALING_ATTEMPTS, tierModels, pricing,
-                List.of(), FrameworkContract.DEFAULT, Map.of(), AgentLoopConfig.DEFAULT);
+                List.of(), FrameworkContract.DEFAULT, Map.of(), AgentLoopConfig.DEFAULT, MavenConfig.DEFAULT,
+                GateConfig.DEFAULT, Map.of());
     }
 
     public EngineConfig withSourceRoots(List<Path> roots) {
         return new EngineConfig(projectRoot, migrationDir, reportsDir, showReasoning, stabilityRuns,
-                maxHealingAttempts, tierModels, pricing, roots, framework, mcpServers, agentLoop);
+                maxHealingAttempts, tierModels, pricing, roots, framework, mcpServers, agentLoop, maven, gate, globalComponents);
     }
 
     public EngineConfig withFramework(FrameworkContract contract) {
         return new EngineConfig(projectRoot, migrationDir, reportsDir, showReasoning, stabilityRuns,
-                maxHealingAttempts, tierModels, pricing, sourceRoots, contract, mcpServers, agentLoop);
+                maxHealingAttempts, tierModels, pricing, sourceRoots, contract, mcpServers, agentLoop, maven, gate, globalComponents);
     }
 
     public EngineConfig withMcpServers(Map<Platform, McpServerConfig> servers) {
         return new EngineConfig(projectRoot, migrationDir, reportsDir, showReasoning, stabilityRuns,
-                maxHealingAttempts, tierModels, pricing, sourceRoots, framework, servers, agentLoop);
+                maxHealingAttempts, tierModels, pricing, sourceRoots, framework, servers, agentLoop, maven, gate, globalComponents);
     }
 
     public EngineConfig withAgentLoop(AgentLoopConfig loop) {
         return new EngineConfig(projectRoot, migrationDir, reportsDir, showReasoning, stabilityRuns,
-                maxHealingAttempts, tierModels, pricing, sourceRoots, framework, mcpServers, loop);
+                maxHealingAttempts, tierModels, pricing, sourceRoots, framework, mcpServers, loop, maven, gate, globalComponents);
+    }
+
+    public EngineConfig withMaven(MavenConfig newMaven) {
+        return new EngineConfig(projectRoot, migrationDir, reportsDir, showReasoning, stabilityRuns,
+                maxHealingAttempts, tierModels, pricing, sourceRoots, framework, mcpServers, agentLoop, newMaven, gate,
+                globalComponents);
+    }
+
+    public EngineConfig withGate(GateConfig newGate) {
+        return new EngineConfig(projectRoot, migrationDir, reportsDir, showReasoning, stabilityRuns,
+                maxHealingAttempts, tierModels, pricing, sourceRoots, framework, mcpServers, agentLoop, maven, newGate,
+                globalComponents);
+    }
+
+    public EngineConfig withGlobalComponents(Map<ComponentId, String> components) {
+        return new EngineConfig(projectRoot, migrationDir, reportsDir, showReasoning, stabilityRuns,
+                maxHealingAttempts, tierModels, pricing, sourceRoots, framework, mcpServers, agentLoop, maven, gate,
+                components);
     }
 
     public TierModelConfig modelFor(LlmTier tier) {

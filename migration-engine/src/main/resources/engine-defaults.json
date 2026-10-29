@@ -62,5 +62,18 @@
       "appium_get_page_source", "appium_screenshot", "appium_app_lifecycle", "appium_mobile_press_key",
       "appium_alert", "appium_get_active_element"
     ]
-  }
+  },
+  "maven": {
+    "extra_args": ["-Pe2e"],
+    "compile_timeout_seconds": 300,
+    "test_timeout_seconds": 900,
+    "class_timeout_seconds": 3600
+  },
+  "gate": {
+    "max_test_minutes": 45,
+    "max_test_tokens": 400000,
+    "environment_retries": 2,
+    "max_consecutive_environment_failures": 3
+  },
+  "global_components": {}
 }

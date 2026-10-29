@@ -103,4 +103,10 @@ class BodyAnalysisTest {
         assertThat(adapter.testSource(new TestMethodRef(CARDS_TEST, "openCardDetails"))).hasValueSatisfying(
                 source -> assertThat(source).startsWith("@Test(description").contains("scrollToCard(last4)"));
     }
+
+    @Test
+    void listsPageObjectClassesThatHoldLocatorsAsScreens() {
+        assertThat(adapter.listScreenClasses()).containsExactly(CARDS_PAGE, "com.bank.pages.GooglePayPage",
+                "com.bank.pages.HomePage", LOGIN_PAGE, PAYMENTS_PAGE);
+    }
 }

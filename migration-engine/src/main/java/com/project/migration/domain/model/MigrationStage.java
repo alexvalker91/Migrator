@@ -8,7 +8,8 @@ public enum MigrationStage {
     STAGE_1_DELTA_ANALYSIS("Delta analysis"),
     STAGE_2_SNAPSHOTS("Dual-MCP snapshots"),
     STAGE_3_CODEGEN("Code generation"),
-    STAGE_4_STABILIZATION("Stabilization 3/3 & self-healing"),
+    STAGE_4_STABILIZATION("Stabilization 3/3"),
+    STAGE_4_SELF_HEALING("Self-healing"),
     STAGE_5_FINALIZE("Final validation & report");
 
     private final String displayName;

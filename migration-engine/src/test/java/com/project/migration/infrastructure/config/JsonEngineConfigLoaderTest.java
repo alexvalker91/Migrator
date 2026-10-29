@@ -7,6 +7,7 @@ import com.project.migration.domain.model.config.McpServerConfig;
 import com.project.migration.domain.model.llm.LlmTier;
 import com.project.migration.domain.model.llm.TierModelConfig;
 import com.project.migration.domain.model.mcp.McpToolCall;
+import com.project.migration.domain.model.screen.ComponentId;
 import com.project.migration.domain.model.telemetry.ModelPricing;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -61,6 +62,40 @@ class JsonEngineConfigLoaderTest {
         assertThat(loop.toolCallTimeout()).hasSeconds(60);
         assertThat(loop.allowedTools()).contains("appium_gesture").doesNotContain("appium_session_management",
                 "appium_generate_tests", "appium_mobile_file", "select_device");
+    }
+
+    @Test
+    void defaultsDescribeMavenGateAndNoGlobalComponents() {
+        EngineConfig config = loader.load(dir, false, Optional.empty());
+
+        assertThat(config.maven().executable()).isEmpty();
+        assertThat(config.maven().extraArgs()).containsExactly("-Pe2e");
+        assertThat(config.maven().testTimeout()).hasMinutes(15);
+        assertThat(config.maven().classTimeout()).hasMinutes(60);
+        assertThat(config.gate().maxTestDuration()).hasMinutes(45);
+        assertThat(config.gate().maxTestTokens()).isEqualTo(400_000);
+        assertThat(config.gate().environmentRetries()).isEqualTo(2);
+        assertThat(config.gate().maxConsecutiveEnvironmentFailures()).isEqualTo(3);
+        assertThat(config.globalComponents()).isEmpty();
+    }
+
+    @Test
+    void overrideDeclaresGlobalComponentsAndMavenSettings() throws IOException {
+        Path override = dir.resolve("override.json");
+        Files.writeString(override, """
+                {"global_components": {"BottomNavBar": "com.bank.pages.BottomNav"},
+                 "maven": {"executable": "mvn", "extra_args": ["-Pe2e", "-o"], "test_module": "migrator"},
+                 "gate": {"max_test_minutes": 10}}
+                """);
+
+        EngineConfig config = loader.load(dir, false, Optional.of(override));
+
+        assertThat(config.globalComponents()).containsEntry(new ComponentId("BottomNavBar"), "com.bank.pages.BottomNav");
+        assertThat(config.maven().executable()).contains("mvn");
+        assertThat(config.maven().extraArgs()).containsExactly("-Pe2e", "-o");
+        assertThat(config.maven().testModule()).contains("migrator");
+        assertThat(config.gate().maxTestDuration()).hasMinutes(10);
+        assertThat(config.gate().maxTestTokens()).isEqualTo(400_000);
     }
 
     @Test

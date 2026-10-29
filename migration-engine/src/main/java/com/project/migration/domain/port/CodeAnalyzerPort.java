@@ -18,6 +18,12 @@ import java.util.Set;
  */
 public interface CodeAnalyzerPort {
 
+    /**
+     * Page Object classes of the project: subclasses of the base page class with at least one locator field.
+     * Classes of global components are not excluded here; the caller decides.
+     */
+    List<String> listScreenClasses();
+
     /** {@code @Test} methods of a class, in source order. */
     List<TestMethodRef> listTestMethods(String testClassFqcn);
 
