@@ -7,12 +7,15 @@ import com.project.migration.domain.model.code.CodeNames;
  */
 public final class BranchNames {
 
+    /** Every branch the engine may commit to or push starts with this. */
+    public static final String PREFIX = "migrate/ios-";
+
     private BranchNames() {
     }
 
     /** {@code migrate/ios-LoginTest} */
     public static String migrationBranch(String testClassFqcn) {
-        return "migrate/ios-" + CodeNames.simpleName(testClassFqcn);
+        return PREFIX + CodeNames.simpleName(testClassFqcn);
     }
 
     /** Baseline commit after Stage 3 so self-healing rollbacks never drop not-yet-verified codegen. */

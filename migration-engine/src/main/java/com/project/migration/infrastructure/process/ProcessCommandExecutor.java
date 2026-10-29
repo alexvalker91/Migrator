@@ -21,7 +21,10 @@ public final class ProcessCommandExecutor implements CommandExecutor {
         long started = System.nanoTime();
         Process process;
         try {
-            process = new ProcessBuilder(command).directory(workDir.toFile()).redirectErrorStream(true).start();
+            ProcessBuilder builder = new ProcessBuilder(command).directory(workDir.toFile()).redirectErrorStream(true);
+            // a child must never wait for a password or a passphrase on a terminal nobody watches
+            builder.environment().put("GIT_TERMINAL_PROMPT", "0");
+            process = builder.start();
         } catch (IOException e) {
             return new CommandResult(-1, "cannot start " + command.getFirst() + ": " + e.getMessage(), false,
                     Duration.ofNanos(System.nanoTime() - started));
