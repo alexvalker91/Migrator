@@ -63,7 +63,7 @@ import java.util.stream.Collectors;
  * Expected trouble (a test that cannot be saved, a red final run, uncompilable codegen) ends in a status and a
  * report, never in an exception; exceptions mean infrastructure failures.
  */
-public final class TestClassMigrationOrchestrator {
+public final class TestClassMigrationOrchestrator implements ClassMigrator {
 
     private static final RunHistoryPort NO_HISTORY = new RunHistoryPort() {
         @Override
@@ -143,6 +143,7 @@ public final class TestClassMigrationOrchestrator {
      * @throws com.project.migration.domain.exception.MigrationException on LLM, MCP, Git, runner or code-modification
      *                                                                   infrastructure failures
      */
+    @Override
     public ClassMigrationOutcome migrate(TestClassMigrationRequest request) {
         String fqcn = request.testClassFqcn();
         Instant started = clock.instant();
