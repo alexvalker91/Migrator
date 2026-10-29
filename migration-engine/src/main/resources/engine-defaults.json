@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "stability_runs": 3,
+  "max_healing_attempts": 3,
+  "tiers": {
+    "TIER_1": {
+      "model_id": "claude-opus-5-5",
+      "fallback_model_ids": ["gpt-6.1-sol-2026-09-29", "claude-opus-5@default"],
+      "reasoning_model_id": "gpt-6-astra-2026-09-03-reasoning",
+      "reasoning_fallback_model_ids": ["gpt-5.6-sol-2026-07-09-reasoning"],
+      "supports_vision": true,
+      "pricing": {"input_per_1m": 5.00, "output_per_1m": 25.00, "reasoning_per_1m": 25.00, "cached_input_per_1m": 0.50}
+    },
+    "TIER_2": {
+      "model_id": "claude-sonnet-5-5",
+      "fallback_model_ids": ["gpt-5.3-codex-2026-02-24", "claude-sonnet-4-6@default"],
+      "reasoning_model_id": "gpt-5.3-codex-2026-02-24-reasoning",
+      "reasoning_fallback_model_ids": [],
+      "supports_vision": true,
+      "pricing": {"input_per_1m": 3.00, "output_per_1m": 15.00, "reasoning_per_1m": 15.00, "cached_input_per_1m": 0.30}
+    },
+    "TIER_3": {
+      "model_id": "claude-haiku-5-5",
+      "fallback_model_ids": ["gemini-3.8-flash", "gpt-4.1-mini-2025-04-14", "gpt-5.4-nano-2026-03-17"],
+      "reasoning_model_id": "gemini-3.8-flash-with-thinking",
+      "reasoning_fallback_model_ids": ["gpt-5.4-nano-2026-03-17-reasoning"],
+      "supports_vision": true,
+      "pricing": {"input_per_1m": 0.25, "output_per_1m": 1.25, "reasoning_per_1m": 1.25, "cached_input_per_1m": 0.03}
+    }
+  },
+  "model_pricing": {}
+}
