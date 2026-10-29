@@ -13,6 +13,38 @@ The design is in `ARCHITECTURE_SPEC.md`, the state of the work in `PROGRESS.md`.
 Modules: `migration-engine` (`com.project.migration`, the engine) and `migrator` (the sandbox target project; on a real
 project the engine is pointed at it with `--project-root`).
 
+## Run
+
+```
+./mvnw -pl migration-engine package -DskipTests      # builds migration-engine/target/migration-engine-<version>-cli.jar
+export DIAL_API_KEY=...                              # EPAM AI DIAL; DIAL_HOST is optional
+export MIGRATION_ANDROID_CAPABILITIES=/path/capabilities-android.json
+export MIGRATION_IOS_CAPABILITIES=/path/capabilities-ios.json
+java -jar migration-engine/target/migration-engine-1.0-SNAPSHOT-cli.jar CardsTest --project-root /path/to/project
+```
+
+`java -jar ... --help` lists the options (`--config`, `--show-reasoning`, `--no-push`, `--push-on-regression`). Several
+classes can be given; they run one after the other and an aborted class stops the batch. A second engine on the same
+project is refused (`.migration/engine.lock`). The first `package` downloads `maven-shade-plugin` from Maven Central.
+
+### Trying it on the sandbox (manual smoke, needs a device and the DIAL key)
+
+1. Set `mcp_servers.ANDROID.app_id` and `mcp_servers.IOS.app_id` for the sandbox app in a config file.
+2. Commit or stash your changes: the engine refuses to start on a dirty working tree.
+3. Run the command above with `LoginTest --project-root . --config my-config.json --no-push`.
+4. Open `migration_reports/LoginTest/dashboard.html` (self-contained: Chart.js, CSS and failure screenshots are inlined;
+   only the Inter font is fetched when online) and `report.md`. The migration is on branch `migrate/ios-LoginTest`.
+
+## Reports
+
+`migration_reports/<TestClass>/` holds `dashboard.html`, `report.md`, `execution.log`, `llm_calls.jsonl`, `walkthroughs/`
+and `failures/<method>/` (screenshot, cleaned screen XML). The dashboard shows token and cost economics, time per
+stage, per-test results with healing attempts and `[LLM REASONING]` blocks, the final iOS and Android checks, project
+progress, and a **scaling projection** for the tests still to migrate: pessimistic (worst recent run), expected (average of
+the last 5 runs, weighted by tests) and optimistic (best recent run without the first one, whose cache was empty), with
+wall-clock time over 1, 2 and 4 devices and a learning curve of cost per test. The projection is computed from
+`.migration/history/runs.jsonl` (one line per finished class) and is flagged as low confidence below 3 runs.
+
 ## Engine configuration
 
 `engine-defaults.json` holds the defaults; a project file passed with `--config` is merged over it (objects merge key by
