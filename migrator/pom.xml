@@ -16,6 +16,10 @@
 
     <properties>
         <testng.version>7.12.0</testng.version>
+        <!-- Appium tests need a device: off by default so the root `./mvnw verify` stays green.
+             Device runs: `-Pe2e` (MavenTestNgRunnerAdapter uses `-Pe2e -Dtest=Class#method -Dplatform=iOS`). -->
+        <skipTests>true</skipTests>
+        <suite>src/test/resources/webdriverio/android_e2e_suite.xml</suite>
     </properties>
 
     <dependencies>
@@ -79,4 +83,29 @@
             <version>2.7.0</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- `-Dtest=...` overrides the suite; BaseTest then reads `-Dplatform` (user properties
+                         are propagated to the forked JVM) -->
+                    <suiteXmlFiles>
+                        <suiteXmlFile>${suite}</suiteXmlFile>
+                    </suiteXmlFiles>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>e2e</id>
+            <properties>
+                <skipTests>false</skipTests>
+            </properties>
+        </profile>
+    </profiles>
 </project>
