@@ -13,6 +13,7 @@ import com.project.migration.domain.model.telemetry.LlmCallRecord;
 import com.project.migration.domain.model.telemetry.ModelPricing;
 import com.project.migration.domain.model.telemetry.SavingsSource;
 import com.project.migration.domain.model.telemetry.TelemetrySnapshot;
+import com.project.migration.domain.model.telemetry.TestTelemetry;
 import com.project.migration.domain.model.telemetry.TokenUsage;
 import com.project.migration.domain.port.LlmClientPort;
 import com.project.migration.domain.port.MigrationLoggerPort;
@@ -114,6 +115,37 @@ class TelemetryCollectorTest {
         assertThat(running.stageDuration(MigrationStage.STAGE_3_CODEGEN)).isEqualTo(Duration.ofSeconds(10));
         assertThat(running.totalDuration()).isEqualTo(Duration.ofSeconds(60));
         assertThat(finished.stageDuration(MigrationStage.STAGE_4_STABILIZATION)).isEqualTo(Duration.ofSeconds(50));
+    }
+
+    @Test
+    void timeAndCallsAreAttributedToTheTestThatWasCurrent() {
+        TestMethodRef other = new TestMethodRef(CLASS, "otherTest");
+        collector.enterStage(MigrationStage.STAGE_4_STABILIZATION);
+        clock.advance(Duration.ofSeconds(5));
+        collector.enterTest(TEST);
+        clock.advance(Duration.ofSeconds(20));
+        collector.recordLlmCall(request(LlmTier.TIER_1), response("opus", new TokenUsage(1_000, 500, 0, 0)));
+        collector.enterStage(MigrationStage.STAGE_4_SELF_HEALING);
+        clock.advance(Duration.ofSeconds(40));
+        collector.enterStage(MigrationStage.STAGE_4_STABILIZATION);
+        clock.advance(Duration.ofSeconds(10));
+        collector.exitTest();
+        collector.enterTest(other);
+        clock.advance(Duration.ofSeconds(7));
+        collector.recordLlmCall(request(LlmTier.TIER_2), response("sonnet", new TokenUsage(100, 50, 0, 0)));
+
+        TestTelemetry first = collector.testSnapshot(TEST);
+        TestTelemetry second = collector.testSnapshot(other);
+        collector.exitTest();
+
+        assertThat(first.stageTimings()).containsEntry(MigrationStage.STAGE_4_STABILIZATION, Duration.ofSeconds(30))
+                .containsEntry(MigrationStage.STAGE_4_SELF_HEALING, Duration.ofSeconds(40));
+        assertThat(first.calls()).hasSize(1);
+        assertThat(first.totalTokens()).isEqualTo(1_500);
+        assertThat(second.stageTimings()).containsEntry(MigrationStage.STAGE_4_STABILIZATION, Duration.ofSeconds(7));
+        assertThat(second.totalTokens()).isEqualTo(150);
+        assertThat(collector.snapshot().stageDuration(MigrationStage.STAGE_4_STABILIZATION)).isEqualTo(Duration.ofSeconds(42));
+        assertThat(collector.testSnapshot(new TestMethodRef(CLASS, "never")).calls()).isEmpty();
     }
 
     @Test

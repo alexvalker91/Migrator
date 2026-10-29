@@ -13,6 +13,7 @@ import com.project.migration.domain.model.telemetry.LlmCallRecord;
 import com.project.migration.domain.model.telemetry.ModelPricing;
 import com.project.migration.domain.model.telemetry.SavingsSource;
 import com.project.migration.domain.model.telemetry.TelemetrySnapshot;
+import com.project.migration.domain.model.telemetry.TestTelemetry;
 import com.project.migration.domain.model.telemetry.TokenSavings;
 import com.project.migration.domain.port.MigrationLoggerPort;
 import com.project.migration.domain.port.TelemetrySinkPort;
@@ -55,6 +56,7 @@ public final class TelemetryCollector {
     private final List<LlmCallRecord> calls = new ArrayList<>();
     private final List<TokenSavings> savings = new ArrayList<>();
     private final Map<MigrationStage, Duration> stageDurations = new EnumMap<>(MigrationStage.class);
+    private final Map<TestMethodRef, Map<MigrationStage, Duration>> testStageDurations = new HashMap<>();
     private final Set<String> unpricedModelsReported = new HashSet<>();
     private long cacheHits;
     private long cacheMisses;
@@ -79,6 +81,7 @@ public final class TelemetryCollector {
         calls.clear();
         savings.clear();
         stageDurations.clear();
+        testStageDurations.clear();
         cacheHits = 0;
         cacheMisses = 0;
     }
@@ -94,11 +97,36 @@ public final class TelemetryCollector {
     }
 
     public synchronized void enterTest(TestMethodRef test) {
-        currentTest = Optional.of(Checks.notNull(test, "test"));
+        Checks.notNull(test, "test");
+        splitStageClock();
+        currentTest = Optional.of(test);
     }
 
     public synchronized void exitTest() {
+        splitStageClock();
         currentTest = Optional.empty();
+    }
+
+    /** Time and LLM calls attributed to {@code test} so far (what the report shows per test). */
+    public synchronized TestTelemetry testSnapshot(TestMethodRef test) {
+        requireSession();
+        Checks.notNull(test, "test");
+        Map<MigrationStage, Duration> timings = new EnumMap<>(MigrationStage.class);
+        timings.putAll(testStageDurations.getOrDefault(test, Map.of()));
+        if (currentStage != null && currentTest.filter(test::equals).isPresent()) {
+            timings.merge(currentStage, Duration.between(stageStart, clock.instant()), Duration::plus);
+        }
+        List<LlmCallRecord> testCalls = calls.stream().filter(call -> call.testMethod().filter(test::equals).isPresent()).toList();
+        return new TestTelemetry(testCalls, timings);
+    }
+
+    /** Books the time of the running stage to the current owner (test or class) before the owner changes. */
+    private void splitStageClock() {
+        if (currentStage != null) {
+            Instant now = clock.instant();
+            closeStage(now);
+            stageStart = now;
+        }
     }
 
     /** Stops the stage clock; {@link #snapshot()} stays available. */
@@ -191,7 +219,11 @@ public final class TelemetryCollector {
 
     private void closeStage(Instant now) {
         if (currentStage != null) {
-            stageDurations.merge(currentStage, Duration.between(stageStart, now), Duration::plus);
+            Duration elapsed = Duration.between(stageStart, now);
+            stageDurations.merge(currentStage, elapsed, Duration::plus);
+            currentTest.ifPresent(test -> testStageDurations
+                    .computeIfAbsent(test, key -> new EnumMap<>(MigrationStage.class))
+                    .merge(currentStage, elapsed, Duration::plus));
         }
     }
 
