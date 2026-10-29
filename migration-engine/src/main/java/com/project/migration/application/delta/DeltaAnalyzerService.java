@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  * The model's answer is validated, repaired once, and completed with the invariant that every screen a test
  * touches needs its {@code DEFAULT} state.
  */
-public final class DeltaAnalyzerService {
+public final class DeltaAnalyzerService implements DeltaAnalyzer {
 
     private static final int METHOD_SOURCE_LIMIT = 2_500;
 
@@ -74,6 +74,7 @@ public final class DeltaAnalyzerService {
      * @throws com.project.migration.domain.exception.LlmCallException if the gateway fails
      * @throws IllegalStateException if two Page Objects with the same simple name would share one screen id
      */
+    @Override
     public MigrationTaskDelta analyze(String testClassFqcn) {
         List<TestMethodRef> tests = analyzer.listTestMethods(testClassFqcn);
         if (tests.isEmpty()) {

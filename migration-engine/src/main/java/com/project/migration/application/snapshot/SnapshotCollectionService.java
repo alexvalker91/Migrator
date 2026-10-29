@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
  * states. States a pass does not reach stay missing and are retried by later tests of the class; whatever is
  * still missing at the end is reported, never thrown.
  */
-public final class SnapshotCollectionService {
+public final class SnapshotCollectionService implements SnapshotCollector {
 
     private static final int SOURCE_LIMIT = 6_000;
 
@@ -95,6 +95,7 @@ public final class SnapshotCollectionService {
     /**
      * @throws com.project.migration.domain.exception.LlmCallException if the gateway fails
      */
+    @Override
     public SnapshotCollectionResult collect(MigrationTaskDelta delta) {
         if (delta.missingSnapshots().isEmpty()) {
             logger.info("No snapshots to collect for " + delta.testClassFqcn());

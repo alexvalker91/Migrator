@@ -35,7 +35,7 @@ import com.project.migration.domain.model.run.TestRunResult;
 import com.project.migration.domain.model.screen.ScreenId;
 import com.project.migration.domain.model.screen.ScreenState;
 import com.project.migration.domain.model.screen.ScreenStateKey;
-import com.project.migration.domain.port.ArtifactReaderPort;
+import com.project.migration.domain.port.ArtifactStorePort;
 import com.project.migration.domain.port.CacheRepositoryPort;
 import com.project.migration.domain.port.CodeAnalyzerPort;
 import com.project.migration.domain.port.CodeModifierPort;
@@ -66,7 +66,7 @@ import java.util.stream.Collectors;
  * the attempt says so. When the code does not compile the attempt is reverted to the baseline, followed by the
  * batches of the earlier attempts, so their progress survives.
  */
-public final class SelfHealingService {
+public final class SelfHealingService implements Healer {
 
     private static final int INVESTIGATION_STEPS = 10;
     private static final int INVESTIGATION_STEPS_WITHOUT_PROGRESS = 6;
@@ -83,7 +83,7 @@ public final class SelfHealingService {
     private final SnapshotRepositoryPort snapshots;
     private final McpClientsPort mcps;
     private final LlmClientPort llm;
-    private final ArtifactReaderPort artifacts;
+    private final ArtifactStorePort artifacts;
     private final XmlPageSourceCleaner cleaner;
     private final TelemetryCollector telemetry;
     private final MigrationLoggerPort logger;
@@ -92,7 +92,7 @@ public final class SelfHealingService {
 
     public SelfHealingService(CodeAnalyzerPort analyzer, CodeModifierPort modifier, TestRunnerPort runner,
                               GitServicePort git, CacheRepositoryPort cache, SnapshotRepositoryPort snapshots,
-                              McpClientsPort mcps, LlmClientPort llm, ArtifactReaderPort artifacts,
+                              McpClientsPort mcps, LlmClientPort llm, ArtifactStorePort artifacts,
                               XmlPageSourceCleaner cleaner, TelemetryCollector telemetry, MigrationLoggerPort logger,
                               EngineConfig config, Clock clock) {
         this.analyzer = Checks.notNull(analyzer, "analyzer");
@@ -115,6 +115,7 @@ public final class SelfHealingService {
      * @throws com.project.migration.domain.exception.LlmCallException if the gateway fails
      * @throws com.project.migration.domain.exception.GitOperationException if a revert fails
      */
+    @Override
     public HealingResult heal(HealingRequest request) {
         List<MethodRef> callTree = analyzer.resolveCallTree(request.test());
         Set<String> allowed = allowedClasses(request, callTree);

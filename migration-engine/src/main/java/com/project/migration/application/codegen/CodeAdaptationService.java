@@ -47,7 +47,7 @@ import java.util.Set;
  * What could not be done is returned, never thrown; what was done is recorded in the cache as {@code UNVERIFIED}
  * until the 3/3 gate confirms it.
  */
-public final class CodeAdaptationService {
+public final class CodeAdaptationService implements CodeAdapter {
 
     private final CodeAnalyzerPort analyzer;
     private final CodeModifierPort modifier;
@@ -72,6 +72,7 @@ public final class CodeAdaptationService {
     /**
      * @throws com.project.migration.domain.exception.LlmCallException if the gateway fails
      */
+    @Override
     public CodeAdaptationResult adapt(MigrationTaskDelta delta) {
         List<TestMethodTask> iosTasks = delta.tasks().stream().filter(task -> task.scope().includesIos()).toList();
         Set<MethodRef> iosSteps = new LinkedHashSet<>();

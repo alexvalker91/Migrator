@@ -20,6 +20,11 @@ public final class BranchNames {
         return "codegen: " + CodeNames.simpleName(testClassFqcn);
     }
 
+    /** Commit that fixes the {@code ios-needs-fix} tag of a test the engine gave up on. */
+    public static String isolationCommitMessage(String testMethodName) {
+        return "isolate: " + testMethodName + " -> ios-needs-fix";
+    }
+
     public static String checkpointCommitMessage(String testMethodName, int stabilityRuns) {
         return "checkpoint: " + testMethodName + " passed " + stabilityRuns + "/" + stabilityRuns + " on iOS";
     }
